@@ -2,7 +2,7 @@
 #include "appkey.h"
 #include <QTimer>
 #include <QFile>
-#include "player.h"
+#include "radio.h"
 
 SpotifySession *SpotifySession::s_self = 0;
 
@@ -64,16 +64,16 @@ int SpotifySession::musicDelivery(sp_session *session, const sp_audioformat *for
         return 0;
     }
     const int numFrames = qMin(num_frames, 8192);
-    QMutex &m = Player::self()->dataMutex();
+    QMutex &m = Radio::self()->dataMutex();
     m.lock();
     Chunk c;
     c.m_data = malloc(numFrames * sizeof(int16_t) * format->channels);
     memcpy(c.m_data, frames, numFrames * sizeof(int16_t) * format->channels);
     c.m_dataFrames = numFrames;
     c.m_rate = format->sample_rate;
-    Player::self()->newChunk(c);
+    Radio::self()->newChunk(c);
     m.unlock();
-    Player::self()->pcmWaitCondition().wakeAll();
+    Radio::self()->pcmWaitCondition().wakeAll();
     return numFrames;
 }
 

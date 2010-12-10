@@ -1,4 +1,42 @@
 #include "radio.h"
+#include "spotifysession.h"
+#include "soundfeeder.h"
+#include "station.h"
+
+#include <QCoreApplication>
+#include <QFile>
+
+Radio *Radio::s_self = 0;
+
+Radio::Radio()
+ : m_currentTrack()
+ , m_trackPos(0)
+ , m_isExiting(false)
+ , m_state(Stopped)
+{
+  
+  qRegisterMetaType<Chunk>();
+  s_self = this;
+  
+  connect(SpotifySession::self(), SIGNAL(endOfTrack()), this, SLOT(onEndOfTrack()));
+  
+  initSound();
+  m_soundFeeder = new SoundFeeder(this);
+  connect(m_soundFeeder, SIGNAL(pcmWritten(Chunk)), this, SLOT(onPcmWritten(Chunk)));
+  m_soundFeeder->start();
+
+}
+
+Radio::~Radio()
+{
+    delete m_soundFeeder;
+}
+
+void Radio::exit()
+{
+  m_isExiting = true;
+  m_pcmWaitCondition.wakeAll();
+}
 
 void Radio::initSound()
 {
@@ -29,3 +67,101 @@ void Radio::initSound()
 
   snd_pcm_prepare(m_snd);
 }
+
+void Radio::onTrackAvailable()
+{
+  if (isPlaying() == false) {
+    play();
+  }
+}
+
+void Radio::play()
+{
+  m_currentTrack = m_station->takeNextTrack();
+  qDebug("Playing %s - %s",m_currentTrack.artist().toLocal8Bit().constData(), m_currentTrack.title().toLocal8Bit().constData());
+  emit playing(m_currentTrack);
+  clearSoundQueue();
+  setState(Playing);
+  m_pcmMutex.lock();
+  snd_pcm_prepare(m_snd);
+  m_pcmMutex.unlock();
+  sp_session_player_load(SpotifySession::self()->session(), m_currentTrack.spotifyTrack());
+  sp_session_player_play(SpotifySession::self()->session(), true);
+  m_playCondition.wakeAll();
+}
+
+
+void Radio::onEndOfTrack()
+{
+//   std::cout << "Finished" << std::endl;
+//   sp_track_release(m_track);
+//   m_sp_session->logout();
+}
+
+
+void Radio::newChunk(const Chunk &chunk) 
+{
+  m_data.enqueue(chunk);
+}
+
+Chunk Radio::nextChunk()
+{
+  return m_data.dequeue();
+}
+
+bool Radio::hasChunk() const
+{
+  return !m_data.isEmpty();
+}
+
+void Radio::onPcmWritten(const Chunk &chunk)
+{
+  int length = m_currentTrack.duration();
+  m_trackPos += chunk.m_dataFrames * 1000/chunk.m_rate;
+  if(m_trackPos >= length * 0.98) {
+    play();
+  }
+//   else {
+//      QString total = QString("%1:%2").arg((length / 1000) / 60, 2, 10, QLatin1Char('0'))
+//                                      .arg((length / 1000) % 60, 2, 10, QLatin1Char('0'));
+//      QString progress = QString("%1:%2").arg((quint64) (m_trackPos / 60, 2, 10, QLatin1Char('0')))
+//                                         .arg((quint64) (m_trackPos % 60, 2, 10, QLatin1Char('0')));
+//      std::cout << progress.toLocal8Bit().constData() << " of " << total.toLocal8Bit().constData() << '\r' << std::flush;
+//   }
+}
+
+void Radio::clearSoundQueue()
+{
+    m_dataMutex.lock();
+    if(isPlaying()) {
+      sp_session_player_play(SpotifySession::self()->session(), false);
+      sp_session_player_unload(SpotifySession::self()->session());
+      m_pcmMutex.lock();
+      snd_pcm_drop(m_snd);
+      m_pcmMutex.unlock();
+      while (!m_data.isEmpty()) {
+        Chunk c = m_data.dequeue();
+        free(c.m_data);
+      }
+    }
+    m_trackPos = 0;
+    m_dataMutex.unlock();
+}
+
+ 
+void Radio::playStation(Station *station)
+{
+    m_station = station;
+    connect(m_station, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
+    connect(SpotifySession::self(), SIGNAL(metadataUpdated()), m_station, SLOT(onMetadataUpdated()));
+    m_station->fill();
+}
+
+void Radio::stopStation()
+{
+    sp_session_player_play(SpotifySession::self()->session(), false);
+    sp_session_player_unload(SpotifySession::self()->session());
+    clearSoundQueue();
+    setState(Stopped);
+}
+

@@ -10,27 +10,31 @@ QT = core gui xml network
 CONFIG += debug
 
 # Input
-SOURCES += player.cpp \
+SOURCES += radio.cpp \
            spotifysession.cpp \
            spotifyquery.cpp \
            main.cpp \
            soundfeeder.cpp \
            track.cpp \
-           playlist.cpp \
-           mainwindow.cpp
-
+           station.cpp \
+           mainwindow.cpp \
+           logindialog.cpp \
+           artistimagefetcher.cpp
 
 HEADERS += spotifysession.h \
            appkey.h \
-           player.h \
+           radio.h \
            soundfeeder.h \
            spotifyquery.h \
            chunk.h \
            track.h \
-           playlist.h \
-           mainwindow.h
+           station.h \
+           mainwindow.h \
+           logindialog.h \
+           artistimagefetcher.h
 
-FORMS += mainwindow.ui
+FORMS += mainwindow.ui \
+         logindialog.ui
 
 RESOURCES += spotfm.qrc
 

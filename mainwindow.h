@@ -2,7 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QImage>
 #include "ui_mainwindow.h"
+
+class Radio;
+class Track;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -13,10 +17,23 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         ~MainWindow();
 
     private slots:
-        void slotPlay(); 
-        void slotStop();
-        void slotPause();
-        void slotSkip()
+        void onPlay(); 
+        void onStop();
+        void onPause();
+        void onSkip();
+
+        void onLoggedError(const QString &msg);
+        void onLoggedIn();
+        void onLoggedOut();
+    
+        void onPlaying(const Track &track);
+        void onArtistImage(QImage);
+
+    private:
+        QString customStation();
+        void toogleButtons(bool enabled);
+
+        Radio *m_radio;
 };
 
 #endif

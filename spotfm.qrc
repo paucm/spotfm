@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/stop.png</file>
     <file>icons/pause.png</file>
     <file>icons/play.png</file>
     <file>icons/skip.png</file>

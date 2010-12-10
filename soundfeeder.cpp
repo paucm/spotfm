@@ -17,7 +17,7 @@
  */
 
 #include "soundfeeder.h"
-#include "player.h"
+#include "radio.h"
 
 SoundFeeder::SoundFeeder(QObject *parent)
     : QThread(parent)
@@ -31,29 +31,34 @@ SoundFeeder::~SoundFeeder()
 void SoundFeeder::run()
 {
     Q_FOREVER {
-        QMutex &m = Player::self()->dataMutex();
+        QMutex &m = Radio::self()->dataMutex();
         m.lock();
-        while (!Player::self()->hasChunk() && !Player::self()->isExiting()) {
-            Player::self()->pcmWaitCondition().wait(&m);
+        while (!Radio::self()->hasChunk() && !Radio::self()->isExiting()) {
+            Radio::self()->pcmWaitCondition().wait(&m);
         }
 
-        if (Player::self()->isExiting()) {
+        if (Radio::self()->isExiting()) {
           m.unlock();
           break;
         }
 
-        Chunk c = Player::self()->nextChunk();
+        Chunk c = Radio::self()->nextChunk();
         m.unlock();
-        QMutex &m2 = Player::self()->pcmMutex();
+        QMutex &m2 = Radio::self()->pcmMutex();
         m2.lock();
+        while (!Radio::self()->isPlaying()) {
+            Radio::self()->playCondition().wait(&m2);
+        }
 
-        const int written = snd_pcm_writei(Player::self()->pcmHandle(), c.m_data, c.m_dataFrames);
+        const int written = snd_pcm_writei(Radio::self()->pcmHandle(), c.m_data, c.m_dataFrames);
         if (written < 0) {
-            snd_pcm_recover(Player::self()->pcmHandle(), written, 1);
+            snd_pcm_recover(Radio::self()->pcmHandle(), written, 1);
         }
         m2.unlock();
         free(c.m_data);
-        emit pcmWritten(c);
+        if (Radio::self()->isPlaying()) {
+            emit pcmWritten(c);
+        }
         usleep(10000);
     }
 }

@@ -21,6 +21,7 @@ class SpotifySession : public QObject
 
         sp_session *session() { return m_session; }
         QString username() const;
+        bool isLoggedIn() const { return m_isLoggedIn; }
         
         static SpotifySession *self() { return s_self; }
         

@@ -1,25 +1,54 @@
 #ifndef STATION_H
 #define STATION_H
 
-/***************
-Examples 
-lastfm://globaltag/rock
-lastfm://artist/Queen/similarartists
-lastfm://user/sebr/personal
-****************/
+#include <QObject>
+#include <QString>
+#include <QStringList>
 
-class Station {
+#include <libspotify/api.h>
+
+#include "track.h"
+
+class SpotifyQuery;
+
+
+class Station : public QObject {
+  Q_OBJECT
+  
   public:
-    Station(const QString &url);
+    Station(const QString &name, QObject *parent=0);
     ~Station();
+   
+    QString name() const { return m_name; }
+    Track takeNextTrack();
     
-    void parse(QString &url);
+  public slots:
+    void fill();
+    
+  signals:
+    void trackAvailable();
+    
+  private slots:
+    void onQueryCompleted(const Track &t);
+    void onQueryError(const QString &q, const QString &msg);
+    void onQueryNoResults(const QString &q);
+    
+    void onGotSearch();
+    
+    void onMetadataUpdated();
+    
+  private:
+    void search();
+    
+  private:
+    QString m_name;
+    SpotifyQuery *m_sp_query;
+    
+    QStringList m_artists;
+    QStringList m_artistHistory;
+    QList<Track> m_queue;
+    QList<Track> m_pending;
+    
 };
-
-class StationWS {
-  public:
-    StationWs(const QString &query); 
-}
-
 
 #endif
