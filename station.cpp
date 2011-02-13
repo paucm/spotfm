@@ -90,17 +90,17 @@ void Station::onMetadataUpdated()
 void Station::onQueryCompleted(const Track &t)
 {
   m_pending.append(t);
-  QTimer::singleShot(1000, this, SLOT(fill()));
+  QTimer::singleShot(500, this, SLOT(fill()));
 }
     
 void Station::onQueryError(const QString &query, const QString &msg)
 {
   qDebug("onQueryError: %s : %s", query.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
-  QTimer::singleShot(1000, this, SLOT(fill()));
+  QTimer::singleShot(500, this, SLOT(fill()));
 }
     
 void Station::onQueryNoResults(const QString &query)
 {
   qDebug("onQueryNoResults: %s", query.toLocal8Bit().constData());
-  QTimer::singleShot(1000, this, SLOT(fill()));
+  QTimer::singleShot(500, this, SLOT(fill()));
 }
