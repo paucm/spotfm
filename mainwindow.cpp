@@ -30,6 +30,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
 
     m_radio = 0;
+    
+    trackLabel->setText(QString());
+    artistLabel->setText(QString());
+    albumLabel->setText(QString());
 }
 
 MainWindow::~MainWindow()

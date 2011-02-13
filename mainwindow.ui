@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>290</width>
-    <height>326</height>
+    <height>426</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -23,7 +23,7 @@
   </property>
   <property name="maximumSize" >
    <size>
-    <width>290</width>
+    <width>350</width>
     <height>16777215</height>
    </size>
   </property>
@@ -36,11 +36,11 @@
      <x>0</x>
      <y>58</y>
      <width>290</width>
-     <height>244</height>
+     <height>344</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2" >
-    <item row="0" column="0" >
+    <item row="1" column="0" >
      <widget class="QFrame" name="frame" >
       <property name="styleSheet" >
        <string notr="true" >background-color: rgb(255, 255, 255)</string>
@@ -94,10 +94,16 @@
             <item row="0" column="0" >
              <widget class="QLabel" name="imageLabel" >
               <property name="text" >
-               <string>imageLabel</string>
+               <string/>
+              </property>
+              <property name="pixmap" >
+               <pixmap resource="spotfm.qrc" >:/icons/icons/no_cover.gif</pixmap>
               </property>
               <property name="scaledContents" >
-               <bool>true</bool>
+               <bool>false</bool>
+              </property>
+              <property name="alignment" >
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -308,7 +314,7 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>302</y>
+     <y>402</y>
      <width>290</width>
      <height>24</height>
     </rect>

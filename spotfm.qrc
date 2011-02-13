@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons" >
+    <file>icons/no_cover.gif</file>
     <file>icons/album.png</file>
     <file>icons/artist.png</file>
     <file>icons/track.png</file>
