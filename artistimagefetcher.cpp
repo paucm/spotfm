@@ -54,6 +54,6 @@ bool ArtistImageFetcher::downloadImage(const QByteArray &xml)
 
 void ArtistImageFetcher::fail()
 {
-    emit finished(QImage(":/icons/icons/no_artist.gif"));
+    emit finished(QImage(":/icons/icons/no_cover.gif"));
 }
 

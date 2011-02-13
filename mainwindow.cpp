@@ -30,16 +30,23 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
 
     m_radio = 0;
-    
-    trackLabel->setText(QString());
-    artistLabel->setText(QString());
-    albumLabel->setText(QString());
+
+    defaultWindow();
 }
 
 MainWindow::~MainWindow()
 {
     if(m_radio) delete m_radio;
     delete SpotifySession::self();
+}
+
+void MainWindow::defaultWindow()
+{
+    trackLabel->setText(QString());
+    artistLabel->setText(QString());
+    albumLabel->setText(QString());
+    imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
+    frame->setEnabled(false);
 }
 
 void MainWindow::onLoggedError(const QString &msg)
@@ -67,8 +74,11 @@ void MainWindow::onPlay()
     }
     
     if (m_radio->state() == Radio::Stopped) {
+
         actionPlay->setEnabled(false);
-        Station *st = new Station(customStation(), this);
+        QString station = customStation();
+        Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1's station").arg(station)));
+        Station *st = new Station(station, this);
         m_radio->playStation(st);
     }
     else if (m_radio->state() == Radio::Paused) {
@@ -81,7 +91,7 @@ void MainWindow::onPlaying(const Track &track)
 {
     toogleButtons(true);
 
-    Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1 - %2")).arg(track.artist()).arg(track.title()));
+    frame->setEnabled(true);
     trackLabel->setText(track.title());
     artistLabel->setText(track.artist());
     albumLabel->setText(track.album());
@@ -100,6 +110,8 @@ void MainWindow::onStop()
 {
     m_radio->stopStation();
     toogleButtons(false);
+    defaultWindow();
+    Ui_MainWindow::statusBar->showMessage(QString());
 }
 
 void MainWindow::onPause()

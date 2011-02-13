@@ -30,6 +30,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onArtistImage(QImage);
 
     private:
+        void defaultWindow();
         QString customStation();
         void toogleButtons(bool enabled);
 
