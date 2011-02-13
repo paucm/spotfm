@@ -1,0 +1,11 @@
+Dependecies
+=========
+
+* Qt http://qt.nokia.com/
+* libspotify http://developer.spotify.com/en/libspotify/overview/
+* liblastfm https://github.com/mxcl/liblastfm
+
+Compiling
+=========
+> qmake-qt4 spotfm.pro
+> make
