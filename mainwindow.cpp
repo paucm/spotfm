@@ -78,7 +78,9 @@ void MainWindow::onPlaying(const Track &track)
     toogleButtons(true);
 
     Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1 - %2")).arg(track.artist()).arg(track.title()));
-    trackLabel->setText(QString(tr("%1 by %2")).arg(track.title()).arg(track.artist()));
+    trackLabel->setText(track.title());
+    artistLabel->setText(track.artist());
+    albumLabel->setText(track.album());
     ArtistImageFetcher *aif = new ArtistImageFetcher(track.artist());
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
     aif->start();
