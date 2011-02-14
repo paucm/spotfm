@@ -61,6 +61,7 @@ class Radio: public QObject {
 
   signals:
     void playing(Track);
+    void error(QString message);
      
   private:
     void play();
@@ -70,6 +71,7 @@ class Radio: public QObject {
     void onEndOfTrack();
     void onPcmWritten(const Chunk &chunk);
     void onTrackAvailable();
+    void onNoArtistFound();
     
   private:
     void initSound();

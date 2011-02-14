@@ -22,11 +22,12 @@ class Station : public QObject {
     QString name() const { return m_name; }
     Track takeNextTrack();
     
-    void start() { fill(); }
+    void start() { m_stop = false; fill(); }
     void stop() { m_stop = true; }
     
   signals:
     void trackAvailable();
+    void noArtistFound();
     
   private slots:
     void fill();

@@ -28,6 +28,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
     
         void onPlaying(const Track &track);
         void onArtistImage(QImage);
+        void onRadioError(const QString &msg);
 
     private:
         void defaultWindow();

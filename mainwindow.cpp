@@ -47,6 +47,7 @@ void MainWindow::defaultWindow()
     albumLabel->setText(QString());
     imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
     frame->setEnabled(false);
+    toogleButtons(false);
 }
 
 void MainWindow::onLoggedError(const QString &msg)
@@ -59,6 +60,7 @@ void MainWindow::onLoggedIn()
     Ui_MainWindow::statusBar->showMessage(tr("Logged in"));
     m_radio = new Radio();
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
+    connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
 }
 
 void MainWindow::onLoggedOut()
@@ -78,7 +80,6 @@ void MainWindow::onPlay()
         actionPlay->setEnabled(false);
         QString station = customStation();
         if (!station.isEmpty()) {
-            Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1's station").arg(station)));
             Station *st = new Station(station, this);
             m_radio->playStation(st);
         }
@@ -94,11 +95,14 @@ void MainWindow::onPlaying(const Track &track)
     toogleButtons(true);
 
     frame->setEnabled(true);
+    Ui_MainWindow::statusBar->showMessage(
+        QString(tr("%1 radio").arg(m_radio->station()->name())));
     trackLabel->setText(track.title());
     artistLabel->setText(track.artist());
     albumLabel->setText(track.album());
-    AlbumImageFetcher *aif = new AlbumImageFetcher(track.albumImage(SpotifySession::self()));
-    connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
+    AlbumImageFetcher *aif2 = new AlbumImageFetcher(
+        track.albumImage(SpotifySession::self()));
+    connect(aif2, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
 }
 
 void MainWindow::onArtistImage(QImage image)
@@ -123,6 +127,12 @@ void MainWindow::onPause()
 
 void MainWindow::onSkip()
 {
+}
+
+void MainWindow::onRadioError(const QString &msg)
+{
+    QMessageBox::critical(this, tr("Error"), msg);
+    defaultWindow();
 }
 
 QString MainWindow::customStation()

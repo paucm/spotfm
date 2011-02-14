@@ -1,12 +1,14 @@
-#include "station.h"
-#include "spotifysession.h"
-#include "spotifyquery.h"
+#include <stdexcept>
+#include <ctime>
 
 #include <QNetworkReply>
 #include <QTimer>
 
 #include <lastfm/Artist>
-#include <ctime>
+
+#include "station.h"
+#include "spotifysession.h"
+#include "spotifyquery.h"
 
 #define QUEUE_SIZE 3
 #define ARTIST_HISTORY_LIMIT 5
@@ -74,6 +76,12 @@ void Station::search()
 void Station::onGotSearch()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    if (reply->error() != QNetworkReply::NoError) {
+        emit noArtistFound();
+        m_stop = true;
+        return;
+    }
+
     m_artists = lastfm::Artist::getSimilar( reply ).values();
     fill();
 }
