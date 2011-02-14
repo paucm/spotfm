@@ -22,13 +22,14 @@ class Station : public QObject {
     QString name() const { return m_name; }
     Track takeNextTrack();
     
-  public slots:
-    void fill();
+    void start() { fill(); }
+    void stop() { m_stop = true; }
     
   signals:
     void trackAvailable();
     
   private slots:
+    void fill();
     void onQueryCompleted(const Track &t);
     void onQueryError(const QString &q, const QString &msg);
     void onQueryNoResults(const QString &q);
@@ -39,16 +40,17 @@ class Station : public QObject {
     
   private:
     void search();
+    void fillAgain();
     
   private:
     QString m_name;
+    bool m_stop;
     SpotifyQuery *m_sp_query;
     
     QStringList m_artists;
     QStringList m_artistHistory;
     QList<Track> m_queue;
-    QList<Track> m_pending;
-    
+    QList<Track> m_pending; 
 };
 
 #endif

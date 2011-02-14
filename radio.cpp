@@ -154,11 +154,12 @@ void Radio::playStation(Station *station)
     m_station = station;
     connect(m_station, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
     connect(SpotifySession::self(), SIGNAL(metadataUpdated()), m_station, SLOT(onMetadataUpdated()));
-    m_station->fill();
+    m_station->start();
 }
 
 void Radio::stopStation()
 {
+    m_station->stop();
     sp_session_player_play(SpotifySession::self()->session(), false);
     sp_session_player_unload(SpotifySession::self()->session());
     clearSoundQueue();
