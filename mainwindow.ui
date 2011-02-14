@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>290</width>
-    <height>426</height>
+    <width>356</width>
+    <height>566</height>
    </rect>
   </property>
   <property name="sizePolicy" >
@@ -17,13 +17,13 @@
   </property>
   <property name="minimumSize" >
    <size>
-    <width>290</width>
+    <width>356</width>
     <height>0</height>
    </size>
   </property>
   <property name="maximumSize" >
    <size>
-    <width>350</width>
+    <width>356</width>
     <height>16777215</height>
    </size>
   </property>
@@ -35,8 +35,8 @@
     <rect>
      <x>0</x>
      <y>58</y>
-     <width>290</width>
-     <height>344</height>
+     <width>356</width>
+     <height>484</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2" >
@@ -256,26 +256,13 @@
      </widget>
     </item>
    </layout>
-   <zorder>layoutWidget</zorder>
-   <zorder>frame</zorder>
-   <zorder>mdiArea</zorder>
-   <zorder>dial</zorder>
-   <zorder>label</zorder>
-   <zorder>frame_2</zorder>
-   <zorder>label</zorder>
-   <zorder>trackImage</zorder>
-   <zorder>artistLabel_2</zorder>
-   <zorder>artistImage</zorder>
-   <zorder>albumLabel</zorder>
-   <zorder>label</zorder>
-   <zorder>frame</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>290</width>
+     <width>356</width>
      <height>24</height>
     </rect>
    </property>
@@ -314,8 +301,8 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>402</y>
-     <width>290</width>
+     <y>542</y>
+     <width>356</width>
      <height>24</height>
     </rect>
    </property>
@@ -325,7 +312,7 @@
     <rect>
      <x>138</x>
      <y>24</y>
-     <width>152</width>
+     <width>218</width>
      <height>34</height>
     </rect>
    </property>

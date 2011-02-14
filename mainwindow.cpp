@@ -6,7 +6,7 @@
 #include "radio.h"
 #include "station.h"
 #include "track.h"
-#include "artistimagefetcher.h"
+#include "albumimagefetcher.h"
 
 MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   : QMainWindow(widget, fl)
@@ -77,9 +77,11 @@ void MainWindow::onPlay()
 
         actionPlay->setEnabled(false);
         QString station = customStation();
-        Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1's station").arg(station)));
-        Station *st = new Station(station, this);
-        m_radio->playStation(st);
+        if (!station.isEmpty()) {
+            Ui_MainWindow::statusBar->showMessage(QString(tr("Playing %1's station").arg(station)));
+            Station *st = new Station(station, this);
+            m_radio->playStation(st);
+        }
     }
     else if (m_radio->state() == Radio::Paused) {
         toogleButtons(true);
@@ -95,9 +97,8 @@ void MainWindow::onPlaying(const Track &track)
     trackLabel->setText(track.title());
     artistLabel->setText(track.artist());
     albumLabel->setText(track.album());
-    ArtistImageFetcher *aif = new ArtistImageFetcher(track.artist());
+    AlbumImageFetcher *aif = new AlbumImageFetcher(track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
-    aif->start();
 }
 
 void MainWindow::onArtistImage(QImage image)

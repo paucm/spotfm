@@ -1,10 +1,10 @@
 #include "track.h"
+#include "spotifysession.h"
 
 Track::Track()
  : m_sp_track(0)
 {
 }
-
 
 Track::Track(sp_track *t)
  : m_sp_track(t)
@@ -32,7 +32,7 @@ Track::~Track()
   if(this->isValid())
     sp_track_release(m_sp_track);
 }
-    
+
 QString Track::artist() const
 {
   if(isValid() && sp_track_num_artists(m_sp_track)) {
@@ -41,7 +41,7 @@ QString Track::artist() const
   }
   return QString();
 }
- 
+
 QString Track::title() const
 {
   if(isValid())
@@ -59,6 +59,19 @@ QString Track::album() const
   }
   return QString();
 }
+
+sp_image *Track::albumImage(SpotifySession *session) const
+{
+    if(isValid()) {
+        sp_album *album = sp_track_album(m_sp_track);
+        if (album) {
+            const byte *id = sp_album_cover(album);
+            return sp_image_create(session->session(), id);
+        }
+    }
+    return NULL;
+}
+
 
 int Track::duration() const
 {

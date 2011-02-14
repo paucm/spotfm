@@ -19,7 +19,7 @@ SOURCES += radio.cpp \
            station.cpp \
            mainwindow.cpp \
            logindialog.cpp \
-           artistimagefetcher.cpp
+           albumimagefetcher.cpp
 
 HEADERS += spotifysession.h \
            appkey.h \
@@ -31,7 +31,7 @@ HEADERS += spotifysession.h \
            station.h \
            mainwindow.h \
            logindialog.h \
-           artistimagefetcher.h
+           albumimagefetcher.h
 
 FORMS += mainwindow.ui \
          logindialog.ui
