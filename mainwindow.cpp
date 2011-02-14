@@ -42,6 +42,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::defaultWindow()
 {
+    setWindowTitle("SpotFm");
     trackLabel->setText(QString());
     artistLabel->setText(QString());
     albumLabel->setText(QString());
@@ -93,12 +94,14 @@ void MainWindow::onPlay()
 void MainWindow::onPlaying(const Track &track)
 {
     toogleButtons(true);
-
     frame->setEnabled(true);
     Ui_MainWindow::statusBar->showMessage(
         QString(tr("%1 radio").arg(m_radio->station()->name())));
-    trackLabel->setText(track.title());
-    artistLabel->setText(track.artist());
+    QString title = track.title();
+    QString artist = track.artist();
+    setWindowTitle(QString(tr("%1 - %2").arg(artist).arg(title)));
+    trackLabel->setText(title);
+    artistLabel->setText(artist);
     albumLabel->setText(track.album());
     AlbumImageFetcher *aif2 = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
