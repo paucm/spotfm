@@ -17,15 +17,13 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         ~MainWindow();
 
     private slots:
-        void onPlay(); 
+        void onPlay();
         void onStop();
         void onPause();
         void onSkip();
 
-        void onLoggedError(const QString &msg);
-        void onLoggedIn();
         void onLoggedOut();
-    
+
         void onPlaying(const Track &track);
         void onArtistImage(QImage);
         void onRadioError(const QString &msg);

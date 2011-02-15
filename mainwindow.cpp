@@ -18,10 +18,8 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     toogleButtons(false);
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
-    SpotifySession *spSession = new SpotifySession();
+    SpotifySession *spSession = SpotifySession::self();
 
-    connect(spSession, SIGNAL(loggedError(QString)), this, SLOT(onLoggedError(QString)));
-    connect(spSession, SIGNAL(loggedIn()), this, SLOT(onLoggedIn()));
     connect(spSession, SIGNAL(loggedOut()), this, SLOT(onLoggedOut()));
 
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
@@ -31,13 +29,16 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     m_radio = 0;
 
+    m_radio = new Radio();
+    connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
+    connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
+
     defaultWindow();
 }
 
 MainWindow::~MainWindow()
 {
     if(m_radio) delete m_radio;
-    delete SpotifySession::self();
 }
 
 void MainWindow::defaultWindow()
@@ -51,22 +52,9 @@ void MainWindow::defaultWindow()
     toogleButtons(false);
 }
 
-void MainWindow::onLoggedError(const QString &msg)
-{
-    Ui_MainWindow::statusBar->showMessage(QString(tr("Loggin error: %1")).arg(msg));
-}
-    
-void MainWindow::onLoggedIn()
-{
-    Ui_MainWindow::statusBar->showMessage(tr("Logged in"));
-    m_radio = new Radio();
-    connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
-    connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
-}
-
 void MainWindow::onLoggedOut()
 {
-  qDebug("logged out");
+    qDebug("logged out");
 }
 
 void MainWindow::onPlay()
