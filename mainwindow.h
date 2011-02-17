@@ -27,6 +27,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onPlaying(const Track &track);
         void onArtistImage(QImage);
         void onRadioError(const QString &msg);
+        void enableSkipButton();
 
     private:
         void defaultWindow();

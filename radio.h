@@ -29,7 +29,7 @@ class Radio: public QObject {
 
     Radio();
     ~Radio();
-    
+
     static Radio *self() { return s_self; }
 
     snd_pcm_t * pcmHandle() const { return m_snd; }
@@ -37,11 +37,11 @@ class Radio: public QObject {
     QMutex &dataMutex() { return m_dataMutex; }
     QWaitCondition &pcmWaitCondition() { return m_pcmWaitCondition; }
     QWaitCondition &playCondition() { return m_playCondition; }
-    
+
     void newChunk(const Chunk &chunk);
     Chunk nextChunk();
     bool hasChunk() const;
-    
+
     void exit();
     bool isExiting() const { return m_isExiting; }
     bool isPlaying() const { return m_state == Playing; }
@@ -50,19 +50,21 @@ class Radio: public QObject {
     Station *station() const { return m_station; }
 
     void pause() { setState(Paused); }
-    void unpause() 
-    { 
+    void unpause()
+    {
         setState(Playing);
         m_playCondition.wakeAll();
     }
     void stopStation();
+    void skipTrack();
 
     State state() const { return m_state; }
 
   signals:
     void playing(Track);
+    void trackInQueue();
     void error(QString message);
-     
+
   private:
     void play();
     void setState(const State &state) { m_state = state; }
@@ -72,11 +74,11 @@ class Radio: public QObject {
     void onPcmWritten(const Chunk &chunk);
     void onTrackAvailable();
     void onNoArtistFound();
-    
+
   private:
     void initSound();
     void clearSoundQueue();
-    
+
   private:
     snd_pcm_t *m_snd;
     QMutex m_pcmMutex;
@@ -85,15 +87,15 @@ class Radio: public QObject {
     QWaitCondition m_playCondition;
     QQueue<Chunk> m_data;
     SoundFeeder *m_soundFeeder;
-    
-    static Radio *s_self;    
+
+    static Radio *s_self;
     Station *m_station;
-    
+
     Track m_currentTrack;
     int m_trackPos;
-    
+
     bool m_isExiting;
-    State m_state;      
+    State m_state;
 };
 
 #endif

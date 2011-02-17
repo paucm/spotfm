@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
+    actionSkip->setEnabled(false);
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
 
@@ -32,6 +33,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     m_radio = new Radio();
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
     connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
+    connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
 
     defaultWindow();
 }
@@ -118,26 +120,33 @@ void MainWindow::onPause()
 
 void MainWindow::onSkip()
 {
+    actionSkip->setEnabled(false);
+    m_radio->skipTrack();
 }
 
 void MainWindow::onRadioError(const QString &msg)
 {
-    QMessageBox::critical(this, tr("Error"), msg);
     defaultWindow();
+    QMessageBox::critical(this, tr("Error"), msg);
 }
 
 QString MainWindow::customStation()
 {
     return QInputDialog::getText(
-                      this, 
-                      tr("Create Custom Station"), 
+                      this,
+                      tr("Create Custom Station"),
                       tr("Enter the name of a band or artist you like"));
 }
 
 void MainWindow::toogleButtons(bool enabled)
 {
     actionPlay->setEnabled(!enabled);
-    actionSkip->setEnabled(enabled);
     actionPause->setEnabled(enabled);
     actionStop->setEnabled(enabled);
+}
+
+void MainWindow::enableSkipButton()
+{
+    if (!actionSkip->isEnabled())
+        actionSkip->setEnabled(true);
 }

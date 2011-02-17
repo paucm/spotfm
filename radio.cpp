@@ -72,23 +72,33 @@ void Radio::onTrackAvailable()
     if (isPlaying() == false) {
         play();
     }
+    else {
+        emit trackInQueue();
+    }
 }
 
 void Radio::play()
 {
     m_currentTrack = m_station->takeNextTrack();
-    qDebug("Playing %s - %s",m_currentTrack.artist().toLocal8Bit().constData(), m_currentTrack.title().toLocal8Bit().constData());
-    emit playing(m_currentTrack);
-    clearSoundQueue();
-    setState(Playing);
-    m_pcmMutex.lock();
-    snd_pcm_prepare(m_snd);
-    m_pcmMutex.unlock();
-    sp_session_player_load(SpotifySession::self()->session(), m_currentTrack.spotifyTrack());
-    sp_session_player_play(SpotifySession::self()->session(), true);
-    m_playCondition.wakeAll();
+    if (m_currentTrack.isValid()) {
+        clearSoundQueue();
+        m_pcmMutex.lock();
+        snd_pcm_prepare(m_snd);
+        m_pcmMutex.unlock();
+        sp_session_player_load(SpotifySession::self()->session(), m_currentTrack.spotifyTrack());
+        sp_session_player_play(SpotifySession::self()->session(), true);
+        m_playCondition.wakeAll();
+        setState(Playing);
+        qDebug("Playing %s - %s", 
+                m_currentTrack.artist().toLocal8Bit().constData(), 
+                m_currentTrack.title().toLocal8Bit().constData());
+        emit playing(m_currentTrack);
+    }
+    else {
+        stopStation();
+        emit error(QString(tr("Playlist finished")));
+    }
 }
-
 
 void Radio::onEndOfTrack()
 {
@@ -147,7 +157,7 @@ void Radio::clearSoundQueue()
     m_dataMutex.unlock();
 }
 
- 
+
 void Radio::playStation(Station *station)
 {
     m_station = station;
@@ -166,7 +176,15 @@ void Radio::stopStation()
     setState(Stopped);
 }
 
+void Radio::skipTrack()
+{
+    sp_session_player_play(SpotifySession::self()->session(), false);
+    sp_session_player_unload(SpotifySession::self()->session());
+    play();
+}
+
 void Radio::onNoArtistFound()
 {
     emit error(QString(tr("This item is not available from streaming")));
 }
+
