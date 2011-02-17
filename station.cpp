@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <ctime>
 
+#include <QMap>
 #include <QNetworkReply>
 #include <QTimer>
 
@@ -9,9 +10,11 @@
 #include "station.h"
 #include "spotifysession.h"
 #include "spotifyquery.h"
+#include "selector.h"
 
-#define QUEUE_SIZE 3
+#define QUEUE_SIZE 2
 #define ARTIST_HISTORY_LIMIT 5
+
 
 Station::Station(const QString &name, QObject *parent)
  : QObject(parent)
@@ -19,11 +22,18 @@ Station::Station(const QString &name, QObject *parent)
  , m_stop(false)
 {
     m_sp_query = new SpotifyQuery(SpotifySession::self()->session());
-  
+
     connect(m_sp_query, SIGNAL(queryCompleted(Track)), this, SLOT(onQueryCompleted(Track)));
     connect(m_sp_query, SIGNAL(queryError(QString, QString)), this, SLOT(onQueryError(QString, QString)));
     connect(m_sp_query, SIGNAL(queryNoResults(QString)), this, SLOT(onQueryNoResults(QString)));
-  
+
+    m_timer = new QTimer(this);
+    m_timer->setInterval(500);
+    m_timer->setSingleShot(true);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(fill()));
+
+    m_artistSelector = 0;
+
     time_t now;
     now = time(NULL);
     qsrand(now);
@@ -31,6 +41,8 @@ Station::Station(const QString &name, QObject *parent)
 
 Station::~Station()
 {
+    if (m_artistSelector)
+        delete m_artistSelector;
     delete m_sp_query;
 }
 
@@ -38,32 +50,32 @@ void Station::fill()
 {
     if (m_stop) return;
 
-    if (m_artists.isEmpty()) {
+    if (!m_artistSelector) {
         search();
         return;
     }
-  
+
     if (m_queue.size() < QUEUE_SIZE) {
-        QString artist = m_artists.at(qrand() % m_artists.size());
-        while(m_artistHistory.contains(artist)) {
-          artist = m_artists.at(qrand() % m_artists.size());
+        QString artist;
+        do {
+            artist = m_artistSelector->getItem();
+        } while(m_artistHistory.contains(artist));
+
+        m_artistHistory << artist;
+        if(m_artistHistory.size() >= ARTIST_HISTORY_LIMIT) {
+            m_artistHistory.removeFirst();
         }
-    
-    m_artistHistory << artist;
-    if(m_artistHistory.size() >= ARTIST_HISTORY_LIMIT) {
-      m_artistHistory.removeFirst();
+        m_sp_query->execute(artist);
     }
-    m_sp_query->execute(artist);
-  }
 }
 
 Track Station::takeNextTrack()
 {
-    if (m_queue.isEmpty()) 
+    if (m_queue.isEmpty())
         return Track();
- 
+
     Track track = m_queue.takeFirst();
-    fillAgain();
+    m_timer->start();
     return track;
 }
 
@@ -82,44 +94,49 @@ void Station::onGotSearch()
         return;
     }
 
-    m_artists = lastfm::Artist::getSimilar( reply ).values();
+    QMap<int, QString> similarArtists = lastfm::Artist::getSimilar(reply);
+    m_artistSelector =  new Selector(similarArtists);
     fill();
+}
+
+void Station::stop()
+{
+    m_stop = true;
+    if (m_timer->isActive())
+        m_timer->stop();
+    delete m_artistSelector;
+    m_artistSelector = 0;
 }
 
 void Station::onMetadataUpdated()
 {
     if(m_pending.isEmpty()) return;
-  
+
     for (int i = 0; i < m_pending.size(); ++i) {
         Track t = m_pending.at(i);
         if (t.isAvailable()) {
             m_pending.removeAt(i);
             m_queue.append(t);
             emit trackAvailable();
-        }   
+        }
     }
 }
 
-void Station::fillAgain()
-{
-    if (m_stop) return;
-    QTimer::singleShot(500, this, SLOT(fill()));
-}
-  
 void Station::onQueryCompleted(const Track &t)
 {
     m_pending.append(t);
-    fillAgain();
+    m_timer->start();
 }
-    
+
 void Station::onQueryError(const QString &query, const QString &msg)
 {
     qDebug("onQueryError: %s : %s", query.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
-    fillAgain();
+    m_timer->start();
 }
-    
+
 void Station::onQueryNoResults(const QString &query)
 {
     qDebug("onQueryNoResults: %s", query.toLocal8Bit().constData());
-    fillAgain();
+    m_timer->start();
 }
+

@@ -10,14 +10,13 @@ SpotifyQuery::SpotifyQuery(sp_session *session)
     now = time(NULL);
     qsrand(now);
 }
- 
+
 SpotifyQuery::~SpotifyQuery()
 {
 }
 
 void SpotifyQuery::execute(const QString &query)
 {
-    qDebug("Spotify Query execute %s", query.toLocal8Bit().constData());
     m_query = query;
     QString q = QString("artist:%1").arg(query);
     m_search = sp_search_create(m_session, q.toUtf8().data(), 0, 5, 0, 0, 0, 0, &SpotifyQuery::searchComplete, this);
@@ -30,15 +29,15 @@ void SpotifyQuery::execute(const QString &query)
 Track SpotifyQuery::bestTrack(SpotifyQuery::TrackList candidates)
 {
     unsigned int length = candidates.size();
-    if (length == 0) 
-        return Track();
-    
+    if (length == 0) return Track();
+
     int index = qrand() % length;
     for (unsigned int i=0; i<length; i++) {
         Track track(candidates.at(index));
         QString uri = track.uri();
         if (!m_tracks.contains(uri)) {
             m_tracks << uri;
+            qDebug("Get track: %s", uri.toLocal8Bit().constData());
             return track;
         }
         index = (index + 1) % length;
