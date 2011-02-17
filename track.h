@@ -20,6 +20,7 @@ class Track {
     QString album() const;
     sp_image *albumImage(SpotifySession *session) const;
     int duration() const;
+    QString uri() const;
 
     bool isValid() const;
     bool isAvailable() const;

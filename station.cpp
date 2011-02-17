@@ -60,7 +60,7 @@ void Station::fill()
 Track Station::takeNextTrack()
 {
     if (m_queue.isEmpty()) 
-        return 0;
+        return Track();
  
     Track track = m_queue.takeFirst();
     fillAgain();

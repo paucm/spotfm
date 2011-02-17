@@ -72,12 +72,21 @@ sp_image *Track::albumImage(SpotifySession *session) const
     return NULL;
 }
 
-
 int Track::duration() const
 {
   if(isValid())
     return sp_track_duration(m_sp_track);
   return 0;
+}
+
+QString Track::uri() const
+{
+    if(!isValid())
+        return QString();
+    char buffer[512];
+    sp_link *link = sp_link_create_from_track(m_sp_track, 0);
+    int size = sp_link_as_string(link, buffer, 512);
+    return QString::fromLocal8Bit(buffer, size);
 }
 
 bool Track::isValid() const

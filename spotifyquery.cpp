@@ -27,42 +27,57 @@ void SpotifyQuery::execute(const QString &query)
     }
 }
 
+Track SpotifyQuery::bestTrack(SpotifyQuery::TrackList candidates)
+{
+    unsigned int length = candidates.size();
+    if (length == 0) 
+        return Track();
+    
+    int index = qrand() % length;
+    for (unsigned int i=0; i<length; i++) {
+        Track track(candidates.at(index));
+        QString uri = track.uri();
+        if (!m_tracks.contains(uri)) {
+            m_tracks << uri;
+            return track;
+        }
+        index = (index + 1) % length;
+    }
+    return Track();
+}
+
 void SpotifyQuery::searchComplete(sp_search *search, void *userdata)
 {
-    QList<sp_track *> candidates;
-    
-    SpotifyQuery *sr = static_cast<SpotifyQuery *>(userdata);
+    TrackList candidates;
+
+    SpotifyQuery *sq = static_cast<SpotifyQuery *>(userdata);
     if (search && SP_ERROR_OK == sp_search_error(search)) {
         int num_tracks = sp_search_num_tracks(search);
         if(!num_tracks) {
-            qDebug("noResults");
-            emit sr->queryNoResults(sr->m_query);
+            emit sq->queryNoResults(sq->m_query);
         }
         else {
             for(int i=0; i < num_tracks; i++) {
                 sp_track *track = sp_search_track(search, i);
                 sp_artist *artist = sp_track_artist(track, 0);
-                if(artist and QString::fromUtf8(sp_artist_name(artist)).toLower() == sr->m_query.toLower()) {
+                if(artist and QString::fromUtf8(sp_artist_name(artist)).toLower() == sq->m_query.toLower()) {
                     candidates.append(track);
-                } 
+                }
             }
-            if(candidates.size() > 0) {
-                Track track(candidates.at(qrand() % candidates.size()));
-                qDebug("queryCompleted");
-                emit sr->queryCompleted(track);
+            Track track = sq->bestTrack(candidates);
+            if (track.isValid()) {
+                emit sq->queryCompleted(track);
             }
             else {
-                qDebug("noResults");
-                emit sr->queryNoResults(sr->m_query);
+                emit sq->queryNoResults(sq->m_query);
             }
         }
     }
     else {
         QString msg = sp_error_message(sp_search_error(search));
-        qDebug("queryError");
-        emit sr->queryError(sr->m_query, msg);
+        emit sq->queryError(sq->m_query, msg);
     }
     sp_search_release(search);
-    sr->m_search = 0;
+    sq->m_search = 0;
 }
 
