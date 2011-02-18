@@ -93,9 +93,10 @@ void MainWindow::onPlaying(const Track &track)
     trackLabel->setText(title);
     artistLabel->setText(artist);
     albumLabel->setText(track.album());
-    AlbumImageFetcher *aif2 = new AlbumImageFetcher(
+    AlbumImageFetcher *aif = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
-    connect(aif2, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
+    connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
+    aif->fetch();
 }
 
 void MainWindow::onArtistImage(QImage image)
