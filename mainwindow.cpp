@@ -18,15 +18,14 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     toogleButtons(false);
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
-    SpotifySession *spSession = SpotifySession::self();
-
-    connect(spSession, SIGNAL(loggedOut()), this, SLOT(onLoggedOut()));
-
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     actionSkip->setEnabled(false);
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
+
+    connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
+    connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
 
     m_radio = 0;
 
@@ -54,18 +53,13 @@ void MainWindow::defaultWindow()
     toogleButtons(false);
 }
 
-void MainWindow::onLoggedOut()
-{
-    qDebug("logged out");
-}
-
 void MainWindow::onPlay()
 {
     if (!SpotifySession::self()->isLoggedIn()) {
         QMessageBox::critical(this, tr("No logged in"), tr("First, you must be logged in in Spotify"));
         return;
     }
-    
+
     if (m_radio->state() == Radio::Stopped) {
 
         actionPlay->setEnabled(false);

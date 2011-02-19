@@ -22,8 +22,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onPause();
         void onSkip();
 
-        void onLoggedOut();
-
         void onPlaying(const Track &track);
         void onArtistImage(QImage);
         void onRadioError(const QString &msg);
