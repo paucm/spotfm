@@ -130,6 +130,7 @@ void Radio::onPcmWritten(const Chunk &chunk)
     if(m_trackPos >= length * 0.98) {
         play();
     }
+    emit trackProgress(chunk);
 //   else {
 //      QString total = QString("%1:%2").arg((length / 1000) / 60, 2, 10, QLatin1Char('0'))
 //                                      .arg((length / 1000) % 60, 2, 10, QLatin1Char('0'));

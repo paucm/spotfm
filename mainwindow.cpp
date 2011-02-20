@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   , Ui::MainWindow()
 
 {
+    qRegisterMetaType<Chunk>();
+    
     setupUi(this);
 
     toogleButtons(false);
@@ -33,6 +35,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
     connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
+    connect(m_radio, SIGNAL(trackProgress(Chunk)), this, SLOT(onTrackProgress(Chunk)));
 
     defaultWindow();
 }
@@ -87,6 +90,18 @@ void MainWindow::onPlaying(const Track &track)
     trackLabel->setText(title);
     artistLabel->setText(artist);
     albumLabel->setText(track.album());
+    
+    int duration = track.duration();
+    QString total = QString("%1:%2")
+        .arg((duration / 1000) / 60, 2, 10, QLatin1Char('0'))
+        .arg((duration / 1000) % 60, 2, 10, QLatin1Char('0'));
+    totalTimeLabel->setText(total);
+    timeLabel->setText(QString(tr("00:00")));
+    //slider->setRange(0, duration);
+    slider->setMinimum(0);
+    slider->setMaximum(duration);
+    slider->setValue(0);
+
     AlbumImageFetcher *aif = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
@@ -97,6 +112,18 @@ void MainWindow::onArtistImage(QImage image)
 {
     imageLabel->setPixmap(QPixmap::fromImage(image));
     sender()->deleteLater();
+}
+
+void MainWindow::onTrackProgress(const Chunk &chunk)
+{
+    if (chunk.m_dataFrames != -1) {
+        slider->setValue(slider->value() + ((chunk.m_dataFrames * 1000) / chunk.m_rate));
+
+        QString progress = QString("%1:%2")
+            .arg((slider->value() / 1000) / 60, 2, 10, QLatin1Char('0'))
+            .arg((slider->value() / 1000) % 60, 2, 10, QLatin1Char('0'));
+        timeLabel->setText(progress);
+   }
 }
 
 void MainWindow::onStop()
