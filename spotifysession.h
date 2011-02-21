@@ -22,9 +22,9 @@ class SpotifySession : public QObject
         sp_session *session() { return m_session; }
         QString username() const;
         bool isLoggedIn() const { return m_isLoggedIn; }
-        
+
         static SpotifySession *self() { return s_self; }
-        
+
     signals:
         void notifyMainThreadSignal();
         void loggedIn();
@@ -32,6 +32,7 @@ class SpotifySession : public QObject
         void loggedError(const QString msg);
         void metadataUpdated();
         void endOfTrack();
+        void playTokenLost();
 
     private slots:
         void onNotifyMainThread();
@@ -43,9 +44,10 @@ class SpotifySession : public QObject
         void signalLoggedOut();
         void signalMetadataUpdated();
         void signalEndOfTrack();
+        void signalPlayTokenLost();
 
         static void loggedIn(sp_session *session, sp_error error);
-        static void connectionError(sp_session *session, sp_error error);            
+        static void connectionError(sp_session *session, sp_error error);
         static void loggedOut(sp_session *session);
         static void notifyMainThread(sp_session *session);
         static void logMessage(sp_session *session, const char *data);

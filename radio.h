@@ -74,6 +74,7 @@ class Radio: public QObject {
     void onPcmWritten(const Chunk &chunk);
     void onTrackAvailable();
     void onNoArtistFound();
+    void onPlayTokenLost();
 
   private:
     void initSound();

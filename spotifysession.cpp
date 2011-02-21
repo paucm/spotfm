@@ -30,7 +30,7 @@ void SpotifySession::loggedIn(sp_session *session, sp_error error)
 
     SpotifySession::self()->signalLoggedIn();
 }
- 
+
 void SpotifySession::loggedOut(sp_session *session)
 {
     Q_UNUSED(session);
@@ -55,11 +55,11 @@ void SpotifySession::metadataUpdated(sp_session *session)
   Q_UNUSED(session);
   SpotifySession::self()->signalMetadataUpdated();
 }
-        
+
 int SpotifySession::musicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
 {
     Q_UNUSED(session);
-    
+
     if (!num_frames) {
         return 0;
     }
@@ -80,7 +80,7 @@ int SpotifySession::musicDelivery(sp_session *session, const sp_audioformat *for
 void SpotifySession::playTokenLost(sp_session *session)
 {
     Q_UNUSED(session);
-    qDebug("play token lost");
+    SpotifySession::self()->signalPlayTokenLost();
 }
 
 void SpotifySession::logMessage(sp_session *session, const char *data)
@@ -181,6 +181,11 @@ void SpotifySession::signalEndOfTrack()
   emit endOfTrack();
 }
 
+void SpotifySession::signalPlayTokenLost()
+{
+    emit playTokenLost();
+}
+
 
 void SpotifySession::onNotifyMainThread()
 {
@@ -190,5 +195,4 @@ void SpotifySession::onNotifyMainThread()
     } while (!timeout);
     QTimer::singleShot(timeout, this, SLOT(onNotifyMainThread()));
 }
-
 

@@ -17,6 +17,8 @@ Radio::Radio()
   
     qRegisterMetaType<Chunk>();
     s_self = this;
+
+    connect(SpotifySession::self(), SIGNAL(playTokenLost()), this, SLOT(onPlayTokenLost()));
   
     initSound();
     m_soundFeeder = new SoundFeeder(this);
@@ -176,5 +178,11 @@ void Radio::skipTrack()
 void Radio::onNoArtistFound()
 {
     emit error(QString(tr("This item is not available from streaming")));
+}
+
+void Radio::onPlayTokenLost()
+{
+    stopStation();
+    emit error(QString(tr("Music is being played with this account at other client")));
 }
 
