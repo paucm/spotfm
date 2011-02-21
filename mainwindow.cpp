@@ -13,8 +13,6 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   , Ui::MainWindow()
 
 {
-    qRegisterMetaType<Chunk>();
-    
     setupUi(this);
 
     toogleButtons(false);
@@ -35,7 +33,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
     connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
-    connect(m_radio, SIGNAL(trackProgress(Chunk)), this, SLOT(onTrackProgress(Chunk)));
+    connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
 
     defaultWindow();
 }
@@ -54,6 +52,9 @@ void MainWindow::defaultWindow()
     imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
     frame->setEnabled(false);
     toogleButtons(false);
+    timeLabel->setText(QString(tr("--:--")));
+    totalTimeLabel->setText(QString(tr("--:--")));
+    slider->setValue(0);
 }
 
 void MainWindow::onPlay()
@@ -114,16 +115,14 @@ void MainWindow::onArtistImage(QImage image)
     sender()->deleteLater();
 }
 
-void MainWindow::onTrackProgress(const Chunk &chunk)
+void MainWindow::onTrackProgress(int pos)
 {
-    if (chunk.m_dataFrames != -1) {
-        slider->setValue(slider->value() + ((chunk.m_dataFrames * 1000) / chunk.m_rate));
+    slider->setValue(pos);
 
-        QString progress = QString("%1:%2")
-            .arg((slider->value() / 1000) / 60, 2, 10, QLatin1Char('0'))
-            .arg((slider->value() / 1000) % 60, 2, 10, QLatin1Char('0'));
-        timeLabel->setText(progress);
-   }
+    QString progress = QString("%1:%2")
+        .arg((slider->value() / 1000) / 60, 2, 10, QLatin1Char('0'))
+        .arg((slider->value() / 1000) % 60, 2, 10, QLatin1Char('0'));
+    timeLabel->setText(progress);
 }
 
 void MainWindow::onStop()

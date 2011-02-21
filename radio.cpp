@@ -127,17 +127,12 @@ void Radio::onPcmWritten(const Chunk &chunk)
 {
     int length = m_currentTrack.duration();
     m_trackPos += chunk.m_dataFrames * 1000/chunk.m_rate;
-    if(m_trackPos >= length * 0.98) {
+    if(m_trackPos >= length * 0.99) {
         play();
     }
-    emit trackProgress(chunk);
-//   else {
-//      QString total = QString("%1:%2").arg((length / 1000) / 60, 2, 10, QLatin1Char('0'))
-//                                      .arg((length / 1000) % 60, 2, 10, QLatin1Char('0'));
-//      QString progress = QString("%1:%2").arg((quint64) (m_trackPos / 60, 2, 10, QLatin1Char('0')))
-//                                         .arg((quint64) (m_trackPos % 60, 2, 10, QLatin1Char('0')));
-//      std::cout << progress.toLocal8Bit().constData() << " of " << total.toLocal8Bit().constData() << '\r' << std::flush;
-//   }
+    else {
+        emit trackProgress(m_trackPos);
+    }
 }
 
 void Radio::clearSoundQueue()

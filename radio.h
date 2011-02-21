@@ -64,7 +64,7 @@ class Radio: public QObject {
     void playing(Track);
     void trackInQueue();
     void error(QString message);
-    void trackProgress(Chunk chunk);
+    void trackProgress(int pos);
 
   private:
     void play();

@@ -5,7 +5,6 @@
 #include <QImage>
 
 #include "ui_mainwindow.h"
-#include "chunk.h"
 
 class Radio;
 class Track;
@@ -25,7 +24,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onSkip();
 
         void onPlaying(const Track &track);
-        void onTrackProgress(const Chunk &chunk);
+        void onTrackProgress(int pos);
         void onArtistImage(QImage);
         void onRadioError(const QString &msg);
         void enableSkipButton();
