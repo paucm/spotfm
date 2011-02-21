@@ -43,6 +43,10 @@ void SoundFeeder::run()
         }
 
         Chunk c = Radio::self()->nextChunk();
+        if (c.m_dataFrames == -1) {
+            emit pcmWritten(c);
+            continue;
+        }
         m.unlock();
         QMutex &m2 = Radio::self()->pcmMutex();
         m2.lock();

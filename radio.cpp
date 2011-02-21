@@ -18,8 +18,6 @@ Radio::Radio()
     qRegisterMetaType<Chunk>();
     s_self = this;
   
-    connect(SpotifySession::self(), SIGNAL(endOfTrack()), this, SLOT(onEndOfTrack()));
-  
     initSound();
     m_soundFeeder = new SoundFeeder(this);
     connect(m_soundFeeder, SIGNAL(pcmWritten(Chunk)), this, SLOT(onPcmWritten(Chunk)));
@@ -100,14 +98,6 @@ void Radio::play()
     }
 }
 
-void Radio::onEndOfTrack()
-{
-//   std::cout << "Finished" << std::endl;
-//   sp_track_release(m_track);
-//   m_sp_session->logout();
-}
-
-
 void Radio::newChunk(const Chunk &chunk) 
 {
     m_data.enqueue(chunk);
@@ -126,12 +116,16 @@ bool Radio::hasChunk() const
 void Radio::onPcmWritten(const Chunk &chunk)
 {
     int length = m_currentTrack.duration();
-    m_trackPos += chunk.m_dataFrames * 1000/chunk.m_rate;
-    if(m_trackPos >= length * 0.99) {
-        play();
+    if(chunk.m_dataFrames == -1) {
+        m_trackPos = length; 
     }
     else {
+        m_trackPos += chunk.m_dataFrames * 1000/chunk.m_rate;
         emit trackProgress(m_trackPos);
+    }
+
+    if(m_trackPos >= length) {
+        play();
     }
 }
 

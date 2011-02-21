@@ -71,7 +71,6 @@ class Radio: public QObject {
     void setState(const State &state) { m_state = state; }
 
   private slots:
-    void onEndOfTrack();
     void onPcmWritten(const Chunk &chunk);
     void onTrackAvailable();
     void onNoArtistFound();

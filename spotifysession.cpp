@@ -170,6 +170,14 @@ void SpotifySession::signalMetadataUpdated()
 
 void SpotifySession::signalEndOfTrack()
 {
+  Chunk c;
+  c.m_data = 0;
+  c.m_dataFrames = -1;
+  c.m_rate = -1;
+  QMutex &m = Radio::self()->dataMutex();
+  Radio::self()->newChunk(c);
+  m.unlock();
+  Radio::self()->pcmWaitCondition().wakeAll();
   emit endOfTrack();
 }
 
