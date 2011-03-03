@@ -13,18 +13,19 @@ SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
 
     m_logoutAndQuit = false;
 
-    if (s.value("Username").toString().isEmpty() || s.value("Password").toString().isEmpty()) {
-        LoginDialog d(s.value("Username").toString());
-        if (d.exec() != QDialog::Accepted) {
-            throw SpotFmException();
-        }
-        if (d.save()) {
-            s.setValue("Username", d.username());
-            s.setValue("Password", d.password());
-        }
+    LoginDialog d(s.value("Username").toString()); 
+    if (!s.value("Username").toString().isEmpty() && !s.value("Password").toString().isEmpty()) {
+        d.setPassword(s.value("Password").toString());
+        d.authenticate();
     }
-    else {
-        spSession->login(s.value("Username").toString(), s.value("Password").toString());
+    if (d.exec() != QDialog::Accepted) {
+        throw SpotFmException();
+    }
+    if (d.save() && 
+        (s.value("Username").toString() != d.username() || 
+        s.value("Password").toString() != d.password())) {
+        s.setValue("Username", d.username());
+        s.setValue("Password", d.password());
     }
     connect(spSession, SIGNAL(loggedOut()), this, SLOT(onLoggedOut()));
 }

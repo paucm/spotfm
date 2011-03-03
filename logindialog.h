@@ -15,13 +15,17 @@ class LoginDialog : public QDialog, private Ui::LoginDialog
 
         QString username() const { return userEdit->text(); }
         QString password() const { return passwordEdit->text(); }
+        void setPassword(const QString &password) const { passwordEdit->setText(password); }
+
         bool save() { return rememberCheck->checkState() == Qt::Checked; }
 
     private:
         QPushButton* ok() const { return buttonBox->button(QDialogButtonBox::Ok); }
 
-    private slots:
+    public slots:
         void authenticate();
+
+    private slots:
         void onLoggedError(const QString &msg);
         void onLoggedIn();
 };
