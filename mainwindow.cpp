@@ -72,6 +72,7 @@ void MainWindow::onPlay()
             Station *st = new Station(station, this);
             m_radio->playStation(st);
         }
+        actionPlay->setEnabled(true);
     }
     else if (m_radio->state() == Radio::Paused) {
         toogleButtons(true);
