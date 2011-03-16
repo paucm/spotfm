@@ -3,9 +3,9 @@
 #include "spotfmapp.h"
 #include "mainwindow.h"
 
-
 int main(int argc, char **argv)
 {
+    QCoreApplication::setOrganizationName("pcapella");
     QCoreApplication::setApplicationName("SpotFm");
     try 
     {

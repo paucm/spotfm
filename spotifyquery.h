@@ -26,7 +26,7 @@ class SpotifyQuery : public QObject
 
     private:
         //Spotify callback
-        static void searchComplete(sp_search *search, void *userdata);
+        static void SP_CALLCONV searchComplete(sp_search *search, void *userdata);
 
         typedef QList<sp_track *> TrackList;
         Track bestTrack(TrackList candidates);

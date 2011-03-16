@@ -5,6 +5,12 @@ Dependencies
 * libspotify http://developer.spotify.com/en/libspotify/overview/
 * liblastfm https://github.com/mxcl/liblastfm
 
+GNU/Linux
+* libasound2
+
+Win32
+* OpenAL http://connect.creativelabs.com/openal/default.aspx 
+
 Compiling
 =========
 > qmake-qt4 spotfm.pro

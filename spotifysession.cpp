@@ -1,62 +1,62 @@
-#include "spotifysession.h"
-#include "appkey.h"
 #include <QTimer>
 #include <QFile>
+#include <QDesktopServices>
+
+#include "spotifysession.h"
+#include "appkey.h"
 #include "radio.h"
 
 SpotifySession *SpotifySession::s_self = 0;
 
 sp_session_callbacks SpotifySession::spotifySessionCallbacks = {
-    &SpotifySession::loggedIn,
-    &SpotifySession::loggedOut,
-    &SpotifySession::metadataUpdated,
-    &SpotifySession::connectionError,
+    &SpotifySession::spLoggedIn,
+    &SpotifySession::spLoggedOut,
+    &SpotifySession::spMetadataUpdated,
+    &SpotifySession::spConnectionError,
     NULL,
-    &SpotifySession::notifyMainThread,
-    &SpotifySession::musicDelivery,
-    &SpotifySession::playTokenLost,
-    &SpotifySession::logMessage,
-    &SpotifySession::endOfTrack,
+    &SpotifySession::spNotifyMainThread,
+    &SpotifySession::spMusicDelivery,
+    &SpotifySession::spPlayTokenLost,
+    &SpotifySession::spLogMessage,
+    &SpotifySession::spEndOfTrack,
 };
 
-
-void SpotifySession::loggedIn(sp_session *session, sp_error error)
+void SP_CALLCONV SpotifySession::spLoggedIn(sp_session *session, sp_error error)
 {
     Q_UNUSED(session);
     if (SP_ERROR_OK != error) {
         SpotifySession::self()->signalLoggedError(QString("Failed to log in to Spotify: %1").arg(sp_error_message(error)));
         return;
     }
-
     SpotifySession::self()->signalLoggedIn();
 }
 
-void SpotifySession::loggedOut(sp_session *session)
+void SP_CALLCONV SpotifySession::spLoggedOut(sp_session *session)
 {
     Q_UNUSED(session);
     SpotifySession::self()->signalLoggedOut();
 }
 
-void SpotifySession::connectionError(sp_session *session, sp_error error)
+void SP_CALLCONV SpotifySession::spConnectionError(sp_session *session, sp_error error)
 {
     qDebug("connectionError");
     Q_UNUSED(session);
     Q_UNUSED(error);
 }
 
-void SpotifySession::notifyMainThread(sp_session *session)
+void SP_CALLCONV SpotifySession::spNotifyMainThread(sp_session *session)
 {
     Q_UNUSED(session);
     SpotifySession::self()->signalNotifyMainThread();
 }
 
-void SpotifySession::metadataUpdated(sp_session *session)
+void SP_CALLCONV SpotifySession::spMetadataUpdated(sp_session *session)
 {
   Q_UNUSED(session);
   SpotifySession::self()->signalMetadataUpdated();
 }
 
-int SpotifySession::musicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
+int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames)
 {
     Q_UNUSED(session);
 
@@ -71,26 +71,27 @@ int SpotifySession::musicDelivery(sp_session *session, const sp_audioformat *for
     memcpy(c.m_data, frames, numFrames * sizeof(int16_t) * format->channels);
     c.m_dataFrames = numFrames;
     c.m_rate = format->sample_rate;
+	c.m_channels = format->channels;
     Radio::self()->newChunk(c);
     m.unlock();
     Radio::self()->pcmWaitCondition().wakeAll();
     return numFrames;
 }
 
-void SpotifySession::playTokenLost(sp_session *session)
+void SP_CALLCONV SpotifySession::spPlayTokenLost(sp_session *session)
 {
     Q_UNUSED(session);
     SpotifySession::self()->signalPlayTokenLost();
 }
 
-void SpotifySession::logMessage(sp_session *session, const char *data)
+void SP_CALLCONV SpotifySession::spLogMessage(sp_session *session, const char *data)
 {
     Q_UNUSED(session);
     Q_UNUSED(data);
     
 }
         
-void SpotifySession::endOfTrack(sp_session *session)
+void SP_CALLCONV SpotifySession::spEndOfTrack(sp_session *session)
 {
     Q_UNUSED(session);
     SpotifySession::self()->signalEndOfTrack();
@@ -101,11 +102,15 @@ SpotifySession::SpotifySession()
 {
     s_self = this;
 
-    connect(this, SIGNAL(notifyMainThreadSignal()), this, SLOT(onNotifyMainThread()), Qt::QueuedConnection);
+    connect(this, SIGNAL(notifyMainThreadSignal()), 
+			this, SLOT(onNotifyMainThread()), Qt::QueuedConnection);
 
+    QString dataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    //Not in Qt 4.4
+	//QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
     m_config.api_version = SPOTIFY_API_VERSION;
-    m_config.cache_location = "/tmp/spotradio";
-    m_config.settings_location = "/tmp/spotradio";
+    m_config.cache_location = dataDir.toLocal8Bit().constData();
+    m_config.settings_location = dataDir.toLocal8Bit().constData();
     m_config.application_key = g_appkey;
     m_config.application_key_size = g_appkey_size;
     m_config.user_agent = "last.hack";
@@ -128,7 +133,6 @@ void SpotifySession::logout()
 {
     if(m_isLoggedIn) {
         sp_session_logout(m_session);
-        //sp_session_release(m_session);
         m_isLoggedIn = false;
     }
 }
@@ -170,22 +174,21 @@ void SpotifySession::signalMetadataUpdated()
 
 void SpotifySession::signalEndOfTrack()
 {
-  Chunk c;
-  c.m_data = 0;
-  c.m_dataFrames = -1;
-  c.m_rate = -1;
-  QMutex &m = Radio::self()->dataMutex();
-  Radio::self()->newChunk(c);
-  m.unlock();
-  Radio::self()->pcmWaitCondition().wakeAll();
-  emit endOfTrack();
+    Chunk c;
+    c.m_data = 0;
+    c.m_dataFrames = -1;
+    c.m_rate = -1;
+    QMutex &m = Radio::self()->dataMutex();
+    Radio::self()->newChunk(c);
+    m.unlock();
+    Radio::self()->pcmWaitCondition().wakeAll();
+    emit endOfTrack();
 }
 
 void SpotifySession::signalPlayTokenLost()
 {
     emit playTokenLost();
 }
-
 
 void SpotifySession::onNotifyMainThread()
 {

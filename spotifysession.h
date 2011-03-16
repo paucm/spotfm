@@ -46,15 +46,15 @@ class SpotifySession : public QObject
         void signalEndOfTrack();
         void signalPlayTokenLost();
 
-        static void loggedIn(sp_session *session, sp_error error);
-        static void connectionError(sp_session *session, sp_error error);
-        static void loggedOut(sp_session *session);
-        static void notifyMainThread(sp_session *session);
-        static void logMessage(sp_session *session, const char *data);
-        static int musicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames);
-        static void endOfTrack(sp_session *session);
-        static void playTokenLost(sp_session *session);
-        static void metadataUpdated(sp_session *session);
+        static void SP_CALLCONV spLoggedIn(sp_session *session, sp_error error);
+        static void SP_CALLCONV spConnectionError(sp_session *session, sp_error error);
+        static void SP_CALLCONV spLoggedOut(sp_session *session);
+        static void SP_CALLCONV spNotifyMainThread(sp_session *session);
+        static void SP_CALLCONV spLogMessage(sp_session *session, const char *data);
+        static int SP_CALLCONV spMusicDelivery(sp_session *session, const sp_audioformat *format, const void *frames, int num_frames);
+        static void SP_CALLCONV spEndOfTrack(sp_session *session);
+        static void SP_CALLCONV spPlayTokenLost(sp_session *session);
+        static void SP_CALLCONV spMetadataUpdated(sp_session *session);
         
         static sp_session_callbacks spotifySessionCallbacks;
 

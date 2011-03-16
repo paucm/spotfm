@@ -27,8 +27,6 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
 
-    m_radio = 0;
-
     m_radio = new Radio();
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
     connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
@@ -72,7 +70,9 @@ void MainWindow::onPlay()
             Station *st = new Station(station, this);
             m_radio->playStation(st);
         }
-        actionPlay->setEnabled(true);
+        else {
+            actionPlay->setEnabled(true);
+        }
     }
     else if (m_radio->state() == Radio::Paused) {
         toogleButtons(true);
@@ -84,6 +84,7 @@ void MainWindow::onPlaying(const Track &track)
 {
     toogleButtons(true);
     frame->setEnabled(true);
+	
     Ui_MainWindow::statusBar->showMessage(
         QString(tr("%1 radio").arg(m_radio->station()->name())));
     QString title = track.title();
@@ -92,18 +93,16 @@ void MainWindow::onPlaying(const Track &track)
     trackLabel->setText(title);
     artistLabel->setText(artist);
     albumLabel->setText(track.album());
-    
     int duration = track.duration();
     QString total = QString("%1:%2")
         .arg((duration / 1000) / 60, 2, 10, QLatin1Char('0'))
         .arg((duration / 1000) % 60, 2, 10, QLatin1Char('0'));
     totalTimeLabel->setText(total);
     timeLabel->setText(QString(tr("00:00")));
-    //slider->setRange(0, duration);
     slider->setMinimum(0);
     slider->setMaximum(duration);
     slider->setValue(0);
-
+	
     AlbumImageFetcher *aif = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));

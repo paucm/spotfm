@@ -45,7 +45,7 @@ Track SpotifyQuery::bestTrack(SpotifyQuery::TrackList candidates)
     return Track();
 }
 
-void SpotifyQuery::searchComplete(sp_search *search, void *userdata)
+void SP_CALLCONV SpotifyQuery::searchComplete(sp_search *search, void *userdata)
 {
     TrackList candidates;
 

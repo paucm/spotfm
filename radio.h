@@ -8,8 +8,8 @@
 #include <QWaitCondition>
 
 #include <libspotify/api.h>
-#include <alsa/asoundlib.h>
 
+#include "audio.h"
 #include "chunk.h"
 #include "track.h"
 
@@ -32,7 +32,7 @@ class Radio: public QObject {
 
     static Radio *self() { return s_self; }
 
-    snd_pcm_t * pcmHandle() const { return m_snd; }
+    Audio *pcmHandle() const { return m_snd; }
     QMutex &pcmMutex() { return m_pcmMutex; }
     QMutex &dataMutex() { return m_dataMutex; }
     QWaitCondition &pcmWaitCondition() { return m_pcmWaitCondition; }
@@ -81,7 +81,7 @@ class Radio: public QObject {
     void clearSoundQueue();
 
   private:
-    snd_pcm_t *m_snd;
+    Audio *m_snd;
     QMutex m_pcmMutex;
     QMutex m_dataMutex;
     QWaitCondition m_pcmWaitCondition;

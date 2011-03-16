@@ -7,12 +7,16 @@
 SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
     : QApplication(argc, argv)
 {
-    QSettings s;
-    //Initalizate the spotify session
+    QSettings s(QSettings::IniFormat,
+				QSettings::UserScope,
+				QCoreApplication::organizationName(),
+				QCoreApplication::applicationName());
+    
+	//Initalizate the spotify session
     SpotifySession *spSession = new SpotifySession();
 
     m_logoutAndQuit = false;
-
+	
     LoginDialog d(s.value("Username").toString()); 
     if (!s.value("Username").toString().isEmpty() && !s.value("Password").toString().isEmpty()) {
         d.setPassword(s.value("Password").toString());
