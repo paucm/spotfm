@@ -5,7 +5,7 @@
 #include <QNetworkReply>
 #include <QTimer>
 
-#include <lastfm/Artist>
+#include <ella/artist.h>
 
 #include "station.h"
 #include "spotifysession.h"
@@ -81,7 +81,7 @@ Track Station::takeNextTrack()
 
 void Station::search()
 {
-    QNetworkReply *reply = lastfm::Artist(m_name).getSimilar();
+    QNetworkReply *reply = ella::Artist(m_name).search();
     connect( reply, SIGNAL(finished()), SLOT(onGotSearch()));
 }
 
@@ -93,8 +93,26 @@ void Station::onGotSearch()
         m_stop = true;
         return;
     }
+    QList<ella::Artist> artists = ella::Artist::list(reply);
+    if(artists.size() == 0) {
+        emit noArtistFound();
+        m_stop = true;
+        return;
+    }
+    QNetworkReply *reply2 = artists[0].getSimilar();
+    connect(reply2, SIGNAL(finished()), this, SLOT(onGotSimilar()));
+}
 
-    QMap<int, QString> similarArtists = lastfm::Artist::getSimilar(reply);
+void Station::onGotSimilar()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    if (reply->error() != QNetworkReply::NoError) {
+        emit noArtistFound();
+        m_stop = true;
+        return;
+    }
+
+    QMap<int, QString> similarArtists = ella::Artist::getSimilar(reply);
     m_artistSelector =  new Selector(similarArtists);
     fill();
 }

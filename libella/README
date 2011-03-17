@@ -1,0 +1,10 @@
+Dependencies
+===========
+
+* Qt 4.4 http://qt.nokia.com
+
+Compiling
+===========
+
+> qmake-qt4 libella.pro
+> make

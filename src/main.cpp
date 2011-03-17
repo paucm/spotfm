@@ -1,4 +1,4 @@
-#include <lastfm/ws.h>
+#include <ella/ws.h>
 
 #include "spotfmapp.h"
 #include "mainwindow.h"
@@ -7,10 +7,11 @@ int main(int argc, char **argv)
 {
     QCoreApplication::setOrganizationName("pcapella");
     QCoreApplication::setApplicationName("SpotFm");
-    try 
+    try
     {
         SpotFmApp app(argc, argv);
-        lastfm::ws::ApiKey = "";
+        ella::ws::Username = "";
+        ella::ws::Password = "";
         MainWindow *mw = new MainWindow();
         mw->show();
         return app.exec();

@@ -37,6 +37,7 @@ class Station : public QObject {
     void onQueryNoResults(const QString &q);
 
     void onGotSearch();
+    void onGotSimilar();
 
     void onMetadataUpdated();
 

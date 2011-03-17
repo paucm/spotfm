@@ -1,7 +1,8 @@
 TEMPLATE = app
 TARGET = spotfm 
 DEPENDPATH += .
-INCLUDEPATH += .
+INCLUDEPATH += . ../libella/include
+LIBS += -L../build -lella
 QT = core gui xml network
 DESTDIR = ../build
 
@@ -53,6 +54,5 @@ unix {
     HEADERS += alsa-audio.h
     LIBS += -L/usr/local/lib \
             -lspotify \
-            -lasound \
-            -llastfm
+            -lasound 
 }

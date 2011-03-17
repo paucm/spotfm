@@ -3,7 +3,6 @@ Dependencies
 
 * Qt http://qt.nokia.com/
 * libspotify http://developer.spotify.com/en/libspotify/overview/
-* liblastfm https://github.com/mxcl/liblastfm
 
 GNU/Linux
 * libasound2
