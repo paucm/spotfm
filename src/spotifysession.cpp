@@ -109,14 +109,14 @@ SpotifySession::SpotifySession()
 
     QString dataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
     #if QT_VERSION >= 0x040500
-	QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+    QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
     #else
     QString cacheDir = dataDir + "/cache";
     cacheDir = QDir::toNativeSeparators(cacheDir);
     #endif
     m_config.api_version = SPOTIFY_API_VERSION;
-    m_config.cache_location = dataDir.toLocal8Bit().constData();
-    m_config.settings_location = cacheDir.toLocal8Bit().constData();
+    m_config.cache_location = cacheDir.toLocal8Bit().constData();
+    m_config.settings_location = dataDir.toLocal8Bit().constData();
     m_config.application_key = g_appkey;
     m_config.application_key_size = g_appkey_size;
     m_config.user_agent = "last.hack";
