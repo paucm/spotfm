@@ -1,3 +1,5 @@
+#include <QtGlobal>
+#include <QDir>
 #include <QTimer>
 #include <QFile>
 #include <QDesktopServices>
@@ -106,11 +108,15 @@ SpotifySession::SpotifySession()
 			this, SLOT(onNotifyMainThread()), Qt::QueuedConnection);
 
     QString dataDir = QDesktopServices::storageLocation(QDesktopServices::DataLocation);
-    //Not in Qt 4.4
-	//QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+    #if QT_VERSION >= 0x040500
+	QString cacheDir = QDesktopServices::storageLocation(QDesktopServices::CacheLocation);
+    #else
+    QString cacheDir = dataDir + "/cache";
+    cacheDir = QDir::toNativeSeparators(cacheDir);
+    #endif
     m_config.api_version = SPOTIFY_API_VERSION;
     m_config.cache_location = dataDir.toLocal8Bit().constData();
-    m_config.settings_location = dataDir.toLocal8Bit().constData();
+    m_config.settings_location = cacheDir.toLocal8Bit().constData();
     m_config.application_key = g_appkey;
     m_config.application_key_size = g_appkey_size;
     m_config.user_agent = "last.hack";
