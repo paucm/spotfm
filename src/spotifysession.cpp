@@ -41,9 +41,8 @@ void SP_CALLCONV SpotifySession::spLoggedOut(sp_session *session)
 
 void SP_CALLCONV SpotifySession::spConnectionError(sp_session *session, sp_error error)
 {
-    qDebug("connectionError");
+    qDebug("connectionError: %s", sp_error_message(error));
     Q_UNUSED(session);
-    Q_UNUSED(error);
 }
 
 void SP_CALLCONV SpotifySession::spNotifyMainThread(sp_session *session)

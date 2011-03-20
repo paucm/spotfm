@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 {
     setupUi(this);
 
-    toogleButtons(false);
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
@@ -50,6 +49,8 @@ void MainWindow::defaultWindow()
     imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
     frame->setEnabled(false);
     toogleButtons(false);
+    actionStop->setEnabled(false);
+    actionSkip->setEnabled(false);
     timeLabel->setText(QString(tr("--:--")));
     totalTimeLabel->setText(QString(tr("--:--")));
     slider->setValue(0);
@@ -83,6 +84,7 @@ void MainWindow::onPlay()
 void MainWindow::onPlaying(const Track &track)
 {
     toogleButtons(true);
+    actionStop->setEnabled(true);
     frame->setEnabled(true);
 	
     Ui_MainWindow::statusBar->showMessage(
@@ -128,7 +130,6 @@ void MainWindow::onTrackProgress(int pos)
 void MainWindow::onStop()
 {
     m_radio->stopStation();
-    toogleButtons(false);
     defaultWindow();
     Ui_MainWindow::statusBar->showMessage(QString());
 }
@@ -163,7 +164,6 @@ void MainWindow::toogleButtons(bool enabled)
 {
     actionPlay->setEnabled(!enabled);
     actionPause->setEnabled(enabled);
-    actionStop->setEnabled(enabled);
 }
 
 void MainWindow::enableSkipButton()

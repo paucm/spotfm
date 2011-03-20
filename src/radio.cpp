@@ -122,7 +122,7 @@ void Radio::onPcmWritten(const Chunk &chunk)
 void Radio::clearSoundQueue()
 {
     m_dataMutex.lock();
-    if(isPlaying()) {
+    if(state() != Stopped) {
         sp_session_player_play(SpotifySession::self()->session(), false);
         sp_session_player_unload(SpotifySession::self()->session());
         m_pcmMutex.lock();
