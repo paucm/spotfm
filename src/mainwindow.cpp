@@ -4,7 +4,7 @@
 #include "mainwindow.h"
 #include "spotifysession.h"
 #include "radio.h"
-#include "station.h"
+#include "artiststation.h"
 #include "track.h"
 #include "albumimagefetcher.h"
 
@@ -19,9 +19,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
-    actionSkip->setEnabled(false);
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
+
+    actionSkip->setEnabled(false);
 
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
@@ -68,7 +69,7 @@ void MainWindow::onPlay()
         actionPlay->setEnabled(false);
         QString station = customStation();
         if (!station.isEmpty()) {
-            Station *st = new Station(station, this);
+            Station *st = new ArtistStation(station, this);
             m_radio->playStation(st);
         }
         else {
@@ -113,7 +114,9 @@ void MainWindow::onPlaying(const Track &track)
 
 void MainWindow::onArtistImage(QImage image)
 {
-    imageLabel->setPixmap(QPixmap::fromImage(image));
+    if (m_radio->state() != Radio::Stopped) {
+        imageLabel->setPixmap(QPixmap::fromImage(image));    
+    }
     sender()->deleteLater();
 }
 

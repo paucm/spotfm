@@ -141,8 +141,7 @@ void Radio::playStation(Station *station)
 {
     m_station = station;
     connect(m_station, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
-    connect(SpotifySession::self(), SIGNAL(metadataUpdated()), m_station, SLOT(onMetadataUpdated()));
-    connect(m_station, SIGNAL(noArtistFound()), this, SLOT(onNoArtistFound()));
+    connect(m_station, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     m_station->start();
 }
 
@@ -160,11 +159,6 @@ void Radio::skipTrack()
     sp_session_player_play(SpotifySession::self()->session(), false);
     sp_session_player_unload(SpotifySession::self()->session());
     play();
-}
-
-void Radio::onNoArtistFound()
-{
-    emit error(QString(tr("This item is not available from streaming")));
 }
 
 void Radio::onPlayTokenLost()

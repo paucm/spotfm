@@ -73,7 +73,6 @@ class Radio: public QObject {
   private slots:
     void onPcmWritten(const Chunk &chunk);
     void onTrackAvailable();
-    void onNoArtistFound();
     void onPlayTokenLost();
 
   private:

@@ -11,6 +11,8 @@ class Selector
         ~Selector();
 
         QString getItem();
+        void removeValue(const QString &value);
+        unsigned int size() const { return m_items.size(); }
 
     private:
         unsigned int totalWeight();

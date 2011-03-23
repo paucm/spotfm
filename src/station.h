@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QMap>
 #include <QStringList>
 
 #include <libspotify/api.h>
@@ -13,48 +14,66 @@ class SpotifyQuery;
 class QTimer;
 class Selector;
 
-class Station : public QObject {
-  Q_OBJECT
+class Station : public QObject
+{
+    Q_OBJECT
+    public:
+        Station(const QString &name, QObject *parent=0)
+            : QObject(parent)
+            , m_name(name)
+        {
+        }
 
-  public:
-    Station(const QString &name, QObject *parent=0);
-    ~Station();
+        ~Station()
+        {
+        }
 
-    QString name() const { return m_name; }
-    Track takeNextTrack();
+        QString name() const { return m_name; }
+        virtual Track takeNextTrack() = 0;
 
-    void start() { m_stop = false; fill(); }
-    void stop();
+        virtual void start() = 0;
+        virtual void stop() = 0;
 
-  signals:
-    void trackAvailable();
-    void noArtistFound();
+    signals:
+        void trackAvailable();
+        void error(const QString &msg);
 
-  private slots:
-    void fill();
-    void onQueryCompleted(const Track &t);
-    void onQueryError(const QString &q, const QString &msg);
-    void onQueryNoResults(const QString &q);
+    private:
+        QString m_name;
+};
 
-    void onGotSearch();
-    void onGotSimilar();
+class QueryStation : public Station
+{
+    Q_OBJECT
+    public:
+        QueryStation(const QString &name, QObject *parent = 0);
+        ~QueryStation();
 
-    void onMetadataUpdated();
+        virtual Track takeNextTrack();
+        virtual void stop();
+        virtual void start() { m_stop = false; fill(); }
 
-  private:
-    void search();
+    protected:
+        virtual void search() = 0;
+        void createArtistSelector(QMap<int, QString> artists);
+        
+    protected slots:
+        void onQueryCompleted(const Track &t);
+        void onQueryError(const QString &q, const QString &msg);
+        void onQueryNoResults(const QString &q);
 
-  private:
-    QString m_name;
-    bool m_stop;
-    SpotifyQuery *m_sp_query;
+        void fill();
+        void onMetadataUpdated();
 
-    Selector *m_artistSelector;
-    QStringList m_artistHistory;
-    QList<Track> m_queue;
-    QList<Track> m_pending;
+    private:
+        bool m_stop;
+        SpotifyQuery *m_sp_query;
 
-    QTimer *m_timer;
+        Selector *m_artistSelector;
+        QStringList m_artistHistory;
+        QList<Track> m_queue;
+        QList<Track> m_pending;
+        QTimer *m_timer;
 };
 
 #endif

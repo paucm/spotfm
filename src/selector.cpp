@@ -1,7 +1,8 @@
- #include "selector.h"
-
+#include <QMutableMapIterator>
 #include <QList>
 #include <QTime>
+
+#include "selector.h"
 
 
 Selector::Selector(QMap<int, QString> items)
@@ -25,6 +26,19 @@ unsigned int Selector::totalWeight()
     while (i.hasNext())
         total += i.next();
     return total;
+}
+
+void Selector::removeValue(const QString &value)
+{
+    QMutableMapIterator<int, QString> i(m_items);
+    while (i.hasNext()) {
+        i.next();
+        if (i.value() == value) {
+            i.remove();
+            break;
+        }
+    }
+    m_totalWeight = totalWeight();
 }
 
 QString Selector::getItem()

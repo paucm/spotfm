@@ -13,6 +13,7 @@ SOURCES += radio.cpp \
            soundfeeder.cpp \
            track.cpp \
            station.cpp \
+           artiststation.cpp \
            mainwindow.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
@@ -28,6 +29,7 @@ HEADERS += spotifysession.h \
 		   audio.h \
            track.h \
            station.h \
+           artiststation.h \
            mainwindow.h \
            logindialog.h \
            albumimagefetcher.h \
