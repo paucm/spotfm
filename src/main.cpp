@@ -7,6 +7,7 @@ int main(int argc, char **argv)
 {
     QCoreApplication::setOrganizationName("pcapella");
     QCoreApplication::setApplicationName("SpotFm");
+    QCoreApplication::setApplicationVersion("0.1");
     try
     {
         SpotFmApp app(argc, argv);

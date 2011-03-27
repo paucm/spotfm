@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons" >
+    <file>icons/spotify-core-logo-128x128.png</file>
     <file>icons/no_cover.gif</file>
     <file>icons/album.png</file>
     <file>icons/artist.png</file>

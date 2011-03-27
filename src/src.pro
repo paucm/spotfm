@@ -20,6 +20,7 @@ SOURCES += radio.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
            selector.cpp \
+           aboutdialog.cpp \
            spotfmapp.cpp  
 
 HEADERS += spotifysession.h \
@@ -37,6 +38,7 @@ HEADERS += spotifysession.h \
            logindialog.h \
            albumimagefetcher.h \
            selector.h \
+           aboutdialog.h \
            spotfmapp.h
 
 FORMS += mainwindow.ui \

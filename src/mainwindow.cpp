@@ -9,6 +9,7 @@
 #include "albumimagefetcher.h"
 #include "artiststation.h"
 #include "tagstation.h"
+#include "aboutdialog.h"
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
@@ -28,9 +29,12 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
-
+    
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
+
+    AboutDialog *about = new AboutDialog(this);
+    connect(actionAbout, SIGNAL(triggered()), about, SLOT(show()));
 
     m_radio = new Radio();
     connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
