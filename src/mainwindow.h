@@ -8,6 +8,7 @@
 
 class Radio;
 class Track;
+class Station;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -29,9 +30,11 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onRadioError(const QString &msg);
         void enableSkipButton();
 
+        void stationEditChanged(const QString &text);
+
     private:
         void defaultWindow();
-        QString customStation();
+        void createStation();
         void toogleButtons(bool enabled);
 
         Radio *m_radio;

@@ -7,6 +7,11 @@
 #include "artiststation.h"
 #include "track.h"
 #include "albumimagefetcher.h"
+#include "artiststation.h"
+#include "tagstation.h"
+
+#define TAB_STATION 0
+#define TAB_PLAYING 1
 
 MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   : QMainWindow(widget, fl)
@@ -17,12 +22,12 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
+    connect(stationEdit, SIGNAL(returnPressed()), this, SLOT(onPlay()));
+    connect(playButton, SIGNAL(clicked()), this, SLOT(onPlay()));
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
-
-    actionSkip->setEnabled(false);
 
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
@@ -33,7 +38,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
     connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
 
+    connect(stationEdit, SIGNAL(textChanged(QString)), this, SLOT(stationEditChanged(QString)));
+
     defaultWindow();
+    helloLabel->setText(QString("Hello %1,").arg(SpotifySession::self()->username()));
 }
 
 MainWindow::~MainWindow()
@@ -55,6 +63,19 @@ void MainWindow::defaultWindow()
     timeLabel->setText(QString(tr("--:--")));
     totalTimeLabel->setText(QString(tr("--:--")));
     slider->setValue(0);
+    stationEdit->setFocus();
+    actionPlay->setEnabled(!stationEdit->text().isEmpty());
+    playButton->setEnabled(!stationEdit->text().isEmpty());
+    tabWidget->setCurrentIndex(TAB_STATION);
+}
+
+void MainWindow::stationEditChanged(const QString &text)
+{
+    if(m_radio->state() == Radio::Stopped) {
+        bool enabled = !text.isEmpty();
+        actionPlay->setEnabled(enabled);
+        playButton->setEnabled(enabled);
+    }
 }
 
 void MainWindow::onPlay()
@@ -65,16 +86,7 @@ void MainWindow::onPlay()
     }
 
     if (m_radio->state() == Radio::Stopped) {
-
-        actionPlay->setEnabled(false);
-        QString station = customStation();
-        if (!station.isEmpty()) {
-            Station *st = new ArtistStation(station, this);
-            m_radio->playStation(st);
-        }
-        else {
-            actionPlay->setEnabled(true);
-        }
+        createStation();
     }
     else if (m_radio->state() == Radio::Paused) {
         toogleButtons(true);
@@ -87,7 +99,7 @@ void MainWindow::onPlaying(const Track &track)
     toogleButtons(true);
     actionStop->setEnabled(true);
     frame->setEnabled(true);
-	
+    tabWidget->setCurrentIndex(TAB_PLAYING);
     Ui_MainWindow::statusBar->showMessage(
         QString(tr("%1 radio").arg(m_radio->station()->name())));
     QString title = track.title();
@@ -155,12 +167,18 @@ void MainWindow::onRadioError(const QString &msg)
     QMessageBox::critical(this, tr("Error"), msg);
 }
 
-QString MainWindow::customStation()
+void MainWindow::createStation()
 {
-    return QInputDialog::getText(
-                      this,
-                      tr("Create Custom Station"),
-                      tr("Enter the name of a band or artist you like"));
+    Station *station;
+    if(!(stationEdit->text().isEmpty())) {
+        actionPlay->setEnabled(false);
+        playButton->setEnabled(false);
+        if (stationCombo->currentText() == "Artist")
+            station = new ArtistStation(stationEdit->text());
+        else
+            station = new TagStation(stationEdit->text());
+        m_radio->playStation(station);
+    }
 }
 
 void MainWindow::toogleButtons(bool enabled)

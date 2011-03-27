@@ -1,6 +1,3 @@
-#include <stdexcept>
-#include <ctime>
-
 #include <QList>
 #include <QMap>
 #include <QNetworkReply>

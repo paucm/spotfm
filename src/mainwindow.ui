@@ -5,26 +5,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>356</width>
-    <height>594</height>
+    <width>400</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="sizePolicy" >
-   <sizepolicy vsizetype="Maximum" hsizetype="Fixed" >
+   <sizepolicy vsizetype="Fixed" hsizetype="Maximum" >
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize" >
    <size>
-    <width>356</width>
-    <height>0</height>
+    <width>400</width>
+    <height>650</height>
    </size>
   </property>
   <property name="maximumSize" >
    <size>
-    <width>356</width>
-    <height>594</height>
+    <width>400</width>
+    <height>650</height>
    </size>
   </property>
   <property name="windowTitle" >
@@ -35,268 +35,523 @@
     <rect>
      <x>0</x>
      <y>58</y>
-     <width>356</width>
-     <height>512</height>
+     <width>400</width>
+     <height>568</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2" >
-    <item row="0" column="0" >
-     <widget class="QFrame" name="frame" >
-      <property name="styleSheet" >
-       <string notr="true" >background-color: rgb(255, 255, 255)</string>
+    <item row="0" column="1" >
+     <widget class="QTabWidget" name="tabWidget" >
+      <property name="minimumSize" >
+       <size>
+        <width>0</width>
+        <height>32</height>
+       </size>
       </property>
-      <property name="frameShape" >
-       <enum>QFrame::NoFrame</enum>
+      <property name="tabShape" >
+       <enum>QTabWidget::Rounded</enum>
       </property>
-      <property name="frameShadow" >
-       <enum>QFrame::Plain</enum>
+      <property name="currentIndex" >
+       <number>0</number>
       </property>
-      <property name="lineWidth" >
-       <number>-2</number>
-      </property>
-      <layout class="QGridLayout" name="_2" >
-       <property name="leftMargin" >
-        <number>9</number>
+      <widget class="QWidget" name="start_an_station" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>378</width>
+         <height>521</height>
+        </rect>
        </property>
-       <property name="bottomMargin" >
-        <number>9</number>
-       </property>
-       <property name="spacing" >
-        <number>6</number>
-       </property>
-       <item row="1" column="0" >
-        <layout class="QGridLayout" name="gridLayout_3" >
-         <item row="0" column="0" colspan="2" >
-          <widget class="QFrame" name="frame_2" >
-           <property name="frameShape" >
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="frameShadow" >
-            <enum>QFrame::Raised</enum>
-           </property>
-           <property name="lineWidth" >
-            <number>1</number>
-           </property>
-           <layout class="QGridLayout" name="gridLayout" >
-            <item row="0" column="0" >
-             <widget class="QLabel" name="imageLabel" >
-              <property name="text" >
-               <string/>
-              </property>
-              <property name="pixmap" >
-               <pixmap resource="spotfm.qrc" >:/icons/icons/no_cover.gif</pixmap>
-              </property>
-              <property name="scaledContents" >
-               <bool>false</bool>
-              </property>
-              <property name="alignment" >
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0" >
-          <layout class="QVBoxLayout" name="verticalLayout" >
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2" >
+       <attribute name="title" >
+        <string>Start a Station</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5" >
+        <item row="0" column="0" >
+         <widget class="QFrame" name="frame_3" >
+          <property name="styleSheet" >
+           <string notr="true" >background-color: rgb(255, 255, 255)</string>
+          </property>
+          <property name="frameShape" >
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow" >
+           <enum>QFrame::Plain</enum>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_6" >
+           <item rowspan="2" row="0" column="0" colspan="2" >
+            <layout class="QVBoxLayout" name="verticalLayout_2" >
              <item>
-              <widget class="QLabel" name="trackImage" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text" >
-                <string/>
-               </property>
-               <property name="pixmap" >
-                <pixmap resource="spotfm.qrc" >:/icons/icons/track.png</pixmap>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="trackLabel" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
+              <widget class="QLabel" name="helloLabel" >
                <property name="font" >
                 <font>
-                 <pointsize>10</pointsize>
+                 <pointsize>18</pointsize>
                  <weight>75</weight>
                  <bold>true</bold>
                 </font>
                </property>
                <property name="text" >
-                <string>trackLabel</string>
+                <string>Hello</string>
+               </property>
+               <property name="textFormat" >
+                <enum>Qt::RichText</enum>
                </property>
               </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label1" >
+               <property name="palette" >
+                <palette>
+                 <active>
+                  <colorrole role="Text" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>40</red>
+                     <green>40</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </active>
+                 <inactive>
+                  <colorrole role="Text" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>40</red>
+                     <green>40</green>
+                     <blue>40</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </inactive>
+                 <disabled>
+                  <colorrole role="Text" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>128</red>
+                     <green>128</green>
+                     <blue>128</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                  <colorrole role="Window" >
+                   <brush brushstyle="SolidPattern" >
+                    <color alpha="255" >
+                     <red>255</red>
+                     <green>255</green>
+                     <blue>255</blue>
+                    </color>
+                   </brush>
+                  </colorrole>
+                 </disabled>
+                </palette>
+               </property>
+               <property name="font" >
+                <font>
+                 <pointsize>12</pointsize>
+                 <weight>50</weight>
+                 <italic>false</italic>
+                 <bold>false</bold>
+                 <kerning>true</kerning>
+                </font>
+               </property>
+               <property name="text" >
+                <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'DejaVu Sans'; font-size:12pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Bitstream Vera Sans';">Enter an &lt;span style=" font-weight:600;">artist&lt;/span> or &lt;span style=" font-weight:600;">tag&lt;/span> you like:&lt;/p>&lt;/body>&lt;/html></string>
+               </property>
+               <property name="wordWrap" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_5" >
+               <item>
+                <widget class="QLineEdit" name="stationEdit" >
+                 <property name="sizePolicy" >
+                  <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="stationCombo" >
+                 <item>
+                  <property name="text" >
+                   <string>Artist</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text" >
+                   <string>Tag</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="playButton" >
+                 <property name="enabled" >
+                  <bool>false</bool>
+                 </property>
+                 <property name="text" >
+                  <string>Play</string>
+                 </property>
+                 <property name="default" >
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3" >
-             <item>
-              <widget class="QLabel" name="artistImage" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+           <item row="1" column="1" >
+            <spacer name="spacer" >
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeType" >
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>11</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="1" >
+            <spacer name="spacer_2" >
+             <property name="orientation" >
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>174</width>
+               <height>377</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="2" >
+            <spacer name="spacer_3" >
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>30</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+          <zorder>spacer</zorder>
+          <zorder>spacer_2</zorder>
+          <zorder>spacer_3</zorder>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="now_playing" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>378</width>
+         <height>521</height>
+        </rect>
+       </property>
+       <attribute name="title" >
+        <string>Now Playing</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4" >
+        <item row="0" column="0" >
+         <widget class="QFrame" name="frame" >
+          <property name="styleSheet" >
+           <string notr="true" >background-color: rgb(255, 255, 255)</string>
+          </property>
+          <property name="frameShape" >
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow" >
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="lineWidth" >
+           <number>-2</number>
+          </property>
+          <layout class="QGridLayout" name="_2" >
+           <property name="leftMargin" >
+            <number>9</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>9</number>
+           </property>
+           <property name="spacing" >
+            <number>6</number>
+           </property>
+           <item row="1" column="0" >
+            <layout class="QGridLayout" name="gridLayout_3" >
+             <item row="0" column="0" colspan="2" >
+              <widget class="QFrame" name="frame_2" >
+               <property name="frameShape" >
+                <enum>QFrame::NoFrame</enum>
                </property>
-               <property name="text" >
-                <string/>
+               <property name="frameShadow" >
+                <enum>QFrame::Raised</enum>
                </property>
-               <property name="pixmap" >
-                <pixmap resource="spotfm.qrc" >:/icons/icons/artist.png</pixmap>
+               <property name="lineWidth" >
+                <number>1</number>
                </property>
+               <layout class="QGridLayout" name="gridLayout" >
+                <item row="0" column="0" >
+                 <widget class="QLabel" name="imageLabel" >
+                  <property name="text" >
+                   <string/>
+                  </property>
+                  <property name="pixmap" >
+                   <pixmap resource="spotfm.qrc" >:/icons/icons/no_cover.gif</pixmap>
+                  </property>
+                  <property name="scaledContents" >
+                   <bool>false</bool>
+                  </property>
+                  <property name="alignment" >
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
               </widget>
              </item>
-             <item>
-              <widget class="QLabel" name="artistLabel" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+             <item row="1" column="0" >
+              <layout class="QVBoxLayout" name="verticalLayout" >
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_2" >
+                 <item>
+                  <widget class="QLabel" name="trackImage" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text" >
+                    <string/>
+                   </property>
+                   <property name="pixmap" >
+                    <pixmap resource="spotfm.qrc" >:/icons/icons/track.png</pixmap>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="trackLabel" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font" >
+                    <font>
+                     <pointsize>10</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text" >
+                    <string>trackLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3" >
+                 <item>
+                  <widget class="QLabel" name="artistImage" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text" >
+                    <string/>
+                   </property>
+                   <property name="pixmap" >
+                    <pixmap resource="spotfm.qrc" >:/icons/icons/artist.png</pixmap>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="artistLabel" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font" >
+                    <font>
+                     <pointsize>9</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text" >
+                    <string>artistLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4" >
+                 <item>
+                  <widget class="QLabel" name="label" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text" >
+                    <string/>
+                   </property>
+                   <property name="pixmap" >
+                    <pixmap resource="spotfm.qrc" >:/icons/icons/album.png</pixmap>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="albumLabel" >
+                   <property name="sizePolicy" >
+                    <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font" >
+                    <font>
+                     <pointsize>8</pointsize>
+                     <weight>75</weight>
+                     <bold>true</bold>
+                    </font>
+                   </property>
+                   <property name="text" >
+                    <string>albumLabel</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item row="1" column="1" >
+              <spacer name="horizontalSpacer" >
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
                </property>
-               <property name="font" >
-                <font>
-                 <pointsize>9</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
+               <property name="sizeType" >
+                <enum>QSizePolicy::Minimum</enum>
                </property>
-               <property name="text" >
-                <string>artistLabel</string>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
                </property>
-              </widget>
+              </spacer>
              </item>
             </layout>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4" >
+           <item row="3" column="0" >
+            <spacer name="verticalSpacer" >
+             <property name="orientation" >
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="0" >
+            <layout class="QHBoxLayout" name="horizontalLayout" >
              <item>
-              <widget class="QLabel" name="label" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
+              <widget class="QSlider" name="slider" >
+               <property name="styleSheet" >
+                <string notr="true" />
                </property>
-               <property name="text" >
-                <string/>
+               <property name="value" >
+                <number>0</number>
                </property>
-               <property name="pixmap" >
-                <pixmap resource="spotfm.qrc" >:/icons/icons/album.png</pixmap>
+               <property name="tracking" >
+                <bool>false</bool>
+               </property>
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickInterval" >
+                <number>0</number>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLabel" name="albumLabel" >
-               <property name="sizePolicy" >
-                <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="font" >
-                <font>
-                 <pointsize>8</pointsize>
-                 <weight>75</weight>
-                 <bold>true</bold>
-                </font>
-               </property>
+              <widget class="QLabel" name="timeLabel" >
                <property name="text" >
-                <string>albumLabel</string>
+                <string>00:00</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_3" >
+               <property name="text" >
+                <string>/</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="totalTimeLabel" >
+               <property name="text" >
+                <string>00:00</string>
                </property>
               </widget>
              </item>
             </layout>
            </item>
           </layout>
-         </item>
-         <item row="1" column="1" >
-          <spacer name="horizontalSpacer" >
-           <property name="orientation" >
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType" >
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0" >
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
-       <item row="3" column="0" >
-        <spacer name="verticalSpacer" >
-         <property name="orientation" >
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0" >
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="0" >
-        <layout class="QHBoxLayout" name="horizontalLayout" >
-         <item>
-          <widget class="QSlider" name="slider" >
-           <property name="styleSheet" >
-            <string notr="true" />
-           </property>
-           <property name="value" >
-            <number>0</number>
-           </property>
-           <property name="tracking" >
-            <bool>false</bool>
-           </property>
-           <property name="orientation" >
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="tickInterval" >
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="timeLabel" >
-           <property name="text" >
-            <string>00:00</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_3" >
-           <property name="text" >
-            <string>/</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="totalTimeLabel" >
-           <property name="text" >
-            <string>00:00</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-      </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -306,7 +561,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>356</width>
+     <width>400</width>
      <height>24</height>
     </rect>
    </property>
@@ -326,15 +581,22 @@
     <addaction name="actionLogoutAndQuit" />
     <addaction name="actionQuit" />
    </widget>
+   <widget class="QMenu" name="menu_Help" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout" />
+   </widget>
    <addaction name="menu_File" />
    <addaction name="menuPlayer" />
+   <addaction name="menu_Help" />
   </widget>
   <widget class="QToolBar" name="mainToolBar" >
    <property name="geometry" >
     <rect>
      <x>0</x>
      <y>24</y>
-     <width>356</width>
+     <width>400</width>
      <height>34</height>
     </rect>
    </property>
@@ -353,8 +615,8 @@
    <property name="geometry" >
     <rect>
      <x>0</x>
-     <y>570</y>
-     <width>356</width>
+     <y>626</y>
+     <width>400</width>
      <height>24</height>
     </rect>
    </property>
@@ -412,6 +674,11 @@
    </property>
    <property name="shortcut" >
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionAbout" >
+   <property name="text" >
+    <string>&amp;About Spotfm...</string>
    </property>
   </action>
  </widget>

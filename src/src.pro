@@ -5,6 +5,7 @@ INCLUDEPATH += . ../libella/include
 LIBS += -L../build -lella
 QT = core gui xml network
 DESTDIR = ../build
+PRE_TARGETDEPS = ../build/libella.a
 
 SOURCES += radio.cpp \
            spotifysession.cpp \
@@ -14,6 +15,7 @@ SOURCES += radio.cpp \
            track.cpp \
            station.cpp \
            artiststation.cpp \
+           tagstation.cpp \
            mainwindow.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
@@ -30,14 +32,15 @@ HEADERS += spotifysession.h \
            track.h \
            station.h \
            artiststation.h \
+           tagstation.h \
            mainwindow.h \
            logindialog.h \
            albumimagefetcher.h \
-           selector.h \  
+           selector.h \
            spotfmapp.h
 
 FORMS += mainwindow.ui \
-         logindialog.ui
+         logindialog.ui 
 
 RESOURCES += spotfm.qrc 
 
