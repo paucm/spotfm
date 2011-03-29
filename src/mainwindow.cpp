@@ -1,5 +1,7 @@
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QMenu>
+#include <QCloseEvent>
 
 #include "mainwindow.h"
 #include "spotifysession.h"
@@ -10,6 +12,7 @@
 #include "artiststation.h"
 #include "tagstation.h"
 #include "aboutdialog.h"
+
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
@@ -46,7 +49,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(stationCombo, SIGNAL(currentIndexChanged(QString)), stationEdit, SLOT(onSuggestChanged(QString)));
 
     defaultWindow();
+    setupTrayIcon();
     helloLabel->setText(QString("Hello %1,").arg(SpotifySession::self()->username()));
+
+    
 }
 
 MainWindow::~MainWindow()
@@ -72,6 +78,64 @@ void MainWindow::defaultWindow()
     actionPlay->setEnabled(!stationEdit->text().isEmpty());
     playButton->setEnabled(!stationEdit->text().isEmpty());
     tabWidget->setCurrentIndex(TAB_STATION);
+}
+
+void MainWindow::setupTrayIcon()
+{
+    QMenu *menu = new QMenu(this);
+    menu->addAction(tr("Open"), this, SLOT(restoreWindow()));
+    menu->addSeparator();
+    menu->addAction(actionPlay);
+    menu->addAction(actionPause);
+    menu->addAction(actionSkip);
+    menu->addSeparator();
+    menu->addAction(actionQuit);
+
+    m_trayIcon = new QSystemTrayIcon( this );
+    m_trayIcon->setContextMenu(menu);
+    m_trayIcon->setIcon(QPixmap::fromImage(QImage(":/icons/icons/spotfm.png")));
+
+    connect(m_trayIcon, SIGNAL(activated( QSystemTrayIcon::ActivationReason)),
+            this, SLOT(onTrayIconActivated( QSystemTrayIcon::ActivationReason)));
+
+    m_trayIcon->show();
+}
+
+void MainWindow::restoreWindow()
+{
+    showNormal();
+    activateWindow();
+    raise();
+}
+
+void MainWindow::onTrayIconActivated( QSystemTrayIcon::ActivationReason reason )
+{
+    // typical linux behavior is single clicking tray icon toggles the main window
+    #ifdef Q_WS_X11
+    if (reason == QSystemTrayIcon::Trigger)
+        toggleWindowVisibility();
+    #else
+    if (reason == QSystemTrayIcon::DoubleClick)
+        toggleWindowVisibility();
+    #endif
+}
+
+void MainWindow::toggleWindowVisibility()
+{
+    if(isVisible()) {
+        hide();
+    }
+    else {
+        show();
+        activateWindow();
+        raise();
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    hide();
+    event->ignore();
 }
 
 void MainWindow::stationEditChanged(const QString &text)

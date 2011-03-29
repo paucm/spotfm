@@ -745,6 +745,9 @@ p, li { white-space: pre-wrap; }
    <property name="text" >
     <string>Play</string>
    </property>
+   <property name="shortcut" >
+    <string>Ctrl+P</string>
+   </property>
   </action>
   <action name="actionPause" >
    <property name="icon" >
@@ -767,7 +770,7 @@ p, li { white-space: pre-wrap; }
     <string>Skip</string>
    </property>
    <property name="shortcut" >
-    <string>Ctrl+S</string>
+    <string>Ctrl+Right</string>
    </property>
   </action>
   <action name="actionStop" >

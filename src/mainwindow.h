@@ -3,12 +3,14 @@
 
 #include <QMainWindow>
 #include <QImage>
+#include <QSystemTrayIcon>
 
 #include "ui_mainwindow.h"
 
 class Radio;
 class Track;
 class Station;
+class QCloseEvent;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -18,7 +20,13 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         MainWindow(QWidget *widget=0, Qt::WFlags fl = 0);
         ~MainWindow();
 
+    private:
+        void toggleWindowVisibility();
+
     private slots:
+        void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
+        void restoreWindow();
+
         void onPlay();
         void onStop();
         void onPause();
@@ -32,12 +40,17 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
         void stationEditChanged(const QString &text);
 
+    protected:
+        void closeEvent(QCloseEvent *event);
+
     private:
+        void setupTrayIcon();
         void defaultWindow();
         void createStation();
         void toogleButtons(bool enabled);
-
+        
         Radio *m_radio;
+        QSystemTrayIcon *m_trayIcon;
 };
 
 #endif
