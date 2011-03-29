@@ -37,7 +37,10 @@ SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
 SpotFmApp::~SpotFmApp()
 {
     if (m_logoutAndQuit) {
-        QSettings s;
+        QSettings s(QSettings::IniFormat,
+				QSettings::UserScope,
+				QCoreApplication::organizationName(),
+				QCoreApplication::applicationName());
         s.remove("Password");
     }
     delete SpotifySession::self();
