@@ -39,7 +39,7 @@ QNetworkReply* Artist::getSimilar() const
 {
     QString path = "/collections/bmat/artists/" + m_bmatid + "/similar/artists";
     QMap<QString, QString> params;
-    params["limit"] = "100";
+    params["limit"] = "50";
     return ella::ws::get(path, params);
 }
  

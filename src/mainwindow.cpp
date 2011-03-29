@@ -43,6 +43,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
 
     connect(stationEdit, SIGNAL(textChanged(QString)), this, SLOT(stationEditChanged(QString)));
+    connect(stationCombo, SIGNAL(currentIndexChanged(QString)), stationEdit, SLOT(onSuggestChanged(QString)));
 
     defaultWindow();
     helloLabel->setText(QString("Hello %1,").arg(SpotifySession::self()->username()));
@@ -90,6 +91,7 @@ void MainWindow::onPlay()
     }
 
     if (m_radio->state() == Radio::Stopped) {
+        stationEdit->onCompleted();
         createStation();
     }
     else if (m_radio->state() == Radio::Paused) {
