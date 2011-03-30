@@ -170,11 +170,17 @@ void MainWindow::onPlaying(const Track &track)
     actionStop->setEnabled(true);
     frame->setEnabled(true);
     tabWidget->setCurrentIndex(TAB_PLAYING);
+    
     Ui_MainWindow::statusBar->showMessage(
         QString(tr("%1 radio").arg(m_radio->station()->name())));
+    
     QString title = track.title();
     QString artist = track.artist();
-    setWindowTitle(QString(tr("%1 - %2").arg(artist).arg(title)));
+   
+    QString msg = QString(tr("%1 - %2").arg(artist).arg(title));
+    setWindowTitle(msg);
+    m_trayIcon->setToolTip(msg);
+
     trackLabel->setText(title);
     artistLabel->setText(artist);
     albumLabel->setText(track.album());
