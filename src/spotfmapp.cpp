@@ -44,6 +44,7 @@ SpotFmApp::~SpotFmApp()
         s.remove("Password");
     }
     delete SpotifySession::self();
+    qDebug("Good Bye!");
 }
 
 void SpotFmApp::logout()

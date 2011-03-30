@@ -31,18 +31,23 @@ Radio::Radio()
     m_soundFeeder = new SoundFeeder(this);
     connect(m_soundFeeder, SIGNAL(pcmWritten(Chunk)), this, SLOT(onPcmWritten(Chunk)));
     m_soundFeeder->start();
+
+    m_station = 0;
 }
 
 Radio::~Radio()
 {
+    exit();
 	delete m_snd;
     delete m_soundFeeder;
 }
 
 void Radio::exit()
 {
+    stopStation();
     m_isExiting = true;
     m_pcmWaitCondition.wakeAll();
+    m_soundFeeder->wait();
 }
 
 void Radio::initSound()
@@ -148,6 +153,7 @@ void Radio::playStation(Station *station)
 void Radio::stopStation()
 {
     m_station->stop();
+    delete m_station;
     sp_session_player_play(SpotifySession::self()->session(), false);
     sp_session_player_unload(SpotifySession::self()->session());
     clearSoundQueue();

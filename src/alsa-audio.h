@@ -12,10 +12,8 @@ class AlsaAudio : public Audio
         {
         }
 		
-        ~AlsaAudio()
-        {
-        }
-		
+        ~AlsaAudio() { snd_pcm_close(m_snd); }
+	
         void init();
         void clear();
         void prepare();
