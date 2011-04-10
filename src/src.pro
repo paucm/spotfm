@@ -15,11 +15,10 @@ SOURCES += radio.cpp \
            track.cpp \
            station.cpp \
            artiststation.cpp \
-           tagstation.cpp \
+           trackstation.cpp \
            mainwindow.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
-           selector.cpp \
            aboutdialog.cpp \
            suggest.cpp \
            searchbox.cpp \
@@ -35,11 +34,10 @@ HEADERS += spotifysession.h \
            track.h \
            station.h \
            artiststation.h \
-           tagstation.h \
+           trackstation.h \
            mainwindow.h \
            logindialog.h \
            albumimagefetcher.h \
-           selector.h \
            aboutdialog.h \
            suggest.h \
            searchbox.h \

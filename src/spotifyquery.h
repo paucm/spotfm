@@ -27,14 +27,9 @@ class SpotifyQuery : public QObject
     private:
         //Spotify callback
         static void SP_CALLCONV searchComplete(sp_search *search, void *userdata);
-
-        typedef QList<sp_track *> TrackList;
-        Track bestTrack(TrackList candidates);
-
         sp_session *m_session;
         sp_search *m_search;
         QString m_query;
-        QStringList m_tracks;
 };
 
 #endif

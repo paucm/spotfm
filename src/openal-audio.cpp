@@ -18,8 +18,10 @@ OpenalAudio::~OpenalAudio()
 }
 
 void OpenalAudio::init()
-{	
-    m_device = alcOpenDevice(NULL); /* Use the default device */
+{
+    const ALCchar *default_device;
+    default_device = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
+    m_device = alcOpenDevice(default_device); /* Use the default device */
     if (!m_device) {
         qDebug("Failed to open device");
         return;
@@ -55,12 +57,14 @@ void OpenalAudio::play(Chunk &chunk)
 {
     ALint val;
     ALuint buf = m_buffer[m_frame % NUM_BUFFERS];
+
     alSourceUnqueueBuffers(m_source, 1, &buf);
-    alBufferData(buf, 
-                chunk.m_channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
-                chunk.m_data,
-                chunk.m_dataFrames * sizeof(int16_t) * chunk.m_channels,				
-                chunk.m_rate);
+
+    alBufferData(buf,
+                 chunk.m_channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16,
+                 chunk.m_data,
+                 chunk.m_dataFrames * sizeof(int16_t) * chunk.m_channels,
+                 chunk.m_rate);
     alSourceQueueBuffers(m_source, 1, &buf);
 	
     //First, we need to prebuffer some audio
@@ -73,9 +77,10 @@ void OpenalAudio::play(Chunk &chunk)
     if(val != AL_PLAYING) {
         alSourcePlay(m_source);
     }
+
     do {
         alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &val);
-        usleep(100);
-    }while (!val);	
+        usleep(10);
+    } while (!val);
     m_frame++;
 }

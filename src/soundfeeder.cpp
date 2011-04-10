@@ -34,10 +34,8 @@ void SoundFeeder::run()
         m.unlock();
         QMutex &m2 = Radio::self()->pcmMutex();
         m2.lock();
-        while (!Radio::self()->isPlaying()) {
-			
+        while (!Radio::self()->isPlaying()) {		
             Radio::self()->playCondition().wait(&m2);
-			
         }
         Radio::self()->pcmHandle()->play(c);
         m2.unlock();
@@ -45,6 +43,6 @@ void SoundFeeder::run()
         if (Radio::self()->isPlaying()) {
             emit pcmWritten(c);
         }
-        usleep(10000);
+        //usleep(10000);
     }
 }

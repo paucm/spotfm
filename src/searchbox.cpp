@@ -1,5 +1,3 @@
-
-
 #include "searchbox.h"
 #include "suggest.h"
 
@@ -22,6 +20,6 @@ void SearchBox::onSuggestChanged(const QString &text)
         m_completer = new ArtistSuggest(this);
     }
     else {
-        m_completer = new TagSuggest(this);
+        m_completer = new TrackSuggest(this);
     }
 }

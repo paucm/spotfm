@@ -3,16 +3,15 @@
 
 #include <QObject>
 #include <QString>
-#include <QMap>
-#include <QStringList>
 
 #include <libspotify/api.h>
+
+#include <ella/track.h>
 
 #include "track.h"
 
 class SpotifyQuery;
 class QTimer;
-class Selector;
 
 class Station : public QObject
 {
@@ -55,7 +54,7 @@ class QueryStation : public Station
 
     protected:
         virtual void search() = 0;
-        void createArtistSelector(QMap<int, QString> artists);
+        void setTracks(const QList<ella::Track> &tracks);
         
     protected slots:
         void onQueryCompleted(const Track &t);
@@ -69,8 +68,7 @@ class QueryStation : public Station
         bool m_stop;
         SpotifyQuery *m_sp_query;
 
-        Selector *m_artistSelector;
-        QStringList m_artistHistory;
+        QList<ella::Track> m_tracks;
         QList<Track> m_queue;
         QList<Track> m_pending;
         QTimer *m_timer;

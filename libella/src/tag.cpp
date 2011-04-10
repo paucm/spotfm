@@ -35,24 +35,23 @@ QMap<int, QString> Tag::list(QNetworkReply *reply)
 
 QNetworkReply* Tag::getArtists() const
 {
-    QString tag = m_name;
-    QString path = "/collections/tags/tags/" + tag.replace(' ', '+');
+    QString path = "/collections/tags/tags/" + m_name;
     path += "/similar/collections/bmat/artists";
     QMap<QString, QString> params;
     params["limit"] = "50";
     return ella::ws::get(path, params);
 }
  
-QMap<int, QString> Tag::getArtists(QNetworkReply *reply)
+QMap<int, Artist> Tag::getArtists(QNetworkReply *reply)
 {
-     QMap<int, QString> artists;
+     QMap<int, Artist> artists;
      XmlQuery xml = ella::ws::parse(reply);
      Q_FOREACH(XmlQuery q, xml.children("artist")) {
          QString id = q.attribute("id");
          if (!id.isEmpty()) {
              int const relevance = q["relevance"].text().toFloat() * 100;
              QString name = q["metadata"]["artist"].text();
-             artists.insertMulti(relevance, name);
+             artists.insertMulti(relevance, Artist(id.toLocal8Bit(), name));
          }
      }
      return artists;

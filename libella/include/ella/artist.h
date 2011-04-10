@@ -5,6 +5,9 @@
 #include <QMap>
 #include <QList>
 
+#include <ella/ella.h>
+#include <ella/track.h>
+
 class QNetworkReply;
 
 namespace ella {
@@ -12,19 +15,14 @@ namespace ella {
     class Artist
     {
         public:
-            Artist(const QByteArray &bmatid, const QString &name)
-                : m_bmatid(bmatid)
+            Artist(const QByteArray &id, const QString &name)
+                : m_id(id)
                 , m_name(name)
             {
             }
 
-            Artist(const QByteArray &bmatid)
-                : m_bmatid(bmatid)
-            {
-            }
-
-            Artist(const QString &name)
-                : m_name(name)
+            Artist(const QByteArray &id)
+                : m_id(id)
             {
             }
 
@@ -35,17 +33,20 @@ namespace ella {
 
             QString bmatid() const
             {
-                return m_bmatid;
+                return m_id;
             }
 
-            QNetworkReply* search( int limit = -1 ) const;
+            static QNetworkReply* search(const QString &query, int limit = -1);
             static QList<Artist> list(QNetworkReply *);
 
             QNetworkReply* getSimilar() const;
-            static QMap<int, QString> getSimilar(QNetworkReply *);
+            static QMap<int, Artist> getSimilar(QNetworkReply *);
+
+            QNetworkReply* getSimilarTracks(Ella::SimilarityType type = Ella::Default) const;
+            static QMap<int, Track> getSimilarTracks(QNetworkReply *);
 
         private:
-            QString m_bmatid;
+            QString m_id;
             QString m_name;
     };
 }

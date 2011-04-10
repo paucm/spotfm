@@ -28,7 +28,7 @@ namespace ella {
             static QMap<int, QString> list(QNetworkReply *);
 
             QNetworkReply* getArtists() const;
-            static QMap<int, QString> getArtists(QNetworkReply *);
+            static QMap<int, Artist> getArtists(QNetworkReply *);
 
         private:
             QString m_name;

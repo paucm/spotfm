@@ -7,10 +7,9 @@
 #include "spotifysession.h"
 #include "radio.h"
 #include "artiststation.h"
+#include "trackstation.h"
 #include "track.h"
 #include "albumimagefetcher.h"
-#include "artiststation.h"
-#include "tagstation.h"
 #include "aboutdialog.h"
 
 
@@ -252,7 +251,7 @@ void MainWindow::createStation()
         if (stationCombo->currentText() == "Artist")
             station = new ArtistStation(stationEdit->text());
         else
-            station = new TagStation(stationEdit->text());
+            station = new TrackStation(stationEdit->text());
         m_radio->playStation(station);
     }
 }

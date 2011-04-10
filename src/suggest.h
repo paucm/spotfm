@@ -49,13 +49,13 @@ class ArtistSuggest : public SuggestCompletion
         void onGotSearch();
 };
 
-class TagSuggest : public SuggestCompletion
+class TrackSuggest : public SuggestCompletion
 {
     Q_OBJECT
 
     public:
-        TagSuggest(QLineEdit *parent = 0);
-        ~TagSuggest();
+        TrackSuggest(QLineEdit *parent = 0);
+        ~TrackSuggest();
 
     public slots:
         void autoSuggest();

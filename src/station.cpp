@@ -1,12 +1,13 @@
 #include <QTimer>
+#include <QRegExp>
+
+#include <ella/track.h>
 
 #include "station.h"
 #include "spotifyquery.h"
 #include "spotifysession.h"
-#include "selector.h"
 
 #define QUEUE_SIZE 2
-#define ARTIST_HISTORY_LIMIT 5
 
 QueryStation::QueryStation(const QString &name, QObject *parent)
     : Station(name, parent)
@@ -23,14 +24,11 @@ QueryStation::QueryStation(const QString &name, QObject *parent)
 
     connect(SpotifySession::self(), SIGNAL(metadataUpdated()), this, SLOT(onMetadataUpdated()));
 
-    m_artistSelector = 0;
     m_stop = false;
 }
 
 QueryStation::~QueryStation()
 {
-    if (m_artistSelector)
-        delete m_artistSelector;
     delete m_sp_query;
 }
 
@@ -48,22 +46,17 @@ void QueryStation::fill()
 {
     if (m_stop) return;
 
-    if (!m_artistSelector) {
+    if (m_tracks.isEmpty()) {
         search();
         return;
     }
-
-    if (m_artistSelector->size() <= ARTIST_HISTORY_LIMIT) {
-        return;
-    }
-
+    
     if (m_queue.size() < QUEUE_SIZE) {
-        QString artist;
-        do {
-            artist = m_artistSelector->getItem();
-        } while(m_artistHistory.contains(artist));
-
-        m_sp_query->execute(artist);
+        ella::Track track = m_tracks.back();
+        QString query = QString("artist:%1 track:%2").arg(track.artistName(), track.title());
+        query.replace(QRegExp("\\[[^\\]]*\\]"), "");
+        query.replace(QRegExp("\\([^\\)]*\\)"), "");
+        m_sp_query->execute(query);
     }
 }
 
@@ -88,34 +81,31 @@ void QueryStation::onMetadataUpdated()
     }
 }
 
-void QueryStation::createArtistSelector(QMap<int, QString> artists)
+void QueryStation::setTracks(const QList<ella::Track> &tracks)
 {
-    if (m_artistSelector) delete m_artistSelector;
-    m_artistSelector =  new Selector(artists);
+    m_tracks = tracks;
     fill();
 }
 
 void QueryStation::onQueryCompleted(const Track &t)
 {
     if (m_stop) return;
-    m_artistHistory << t.artist();
-    if(m_artistHistory.size() >= ARTIST_HISTORY_LIMIT) {
-        m_artistHistory.removeFirst();
-    }
+    
     m_pending.append(t);
+    m_tracks.pop_back();
     m_timer->start();
 }
 
 void QueryStation::onQueryError(const QString &query, const QString &msg)
 {
     qDebug("onQueryError: %s : %s", query.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
-    m_artistSelector->removeValue(query);
+    m_tracks.pop_back();
     m_timer->start();
 }
 
 void QueryStation::onQueryNoResults(const QString &query)
 {
     qDebug("onQueryNoResults: %s", query.toLocal8Bit().constData());
-    m_artistSelector->removeValue(query);
+    m_tracks.pop_back();
     m_timer->start();
 }

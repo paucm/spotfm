@@ -2,26 +2,26 @@
 #include <QMap>
 #include <QNetworkReply>
 
-#include <ella/artist.h>
+#include <ella/track.h>
 
-#include "artiststation.h"
+#include "trackstation.h"
 
-ArtistStation::ArtistStation(const QString &name, QObject *parent)
+TrackStation::TrackStation(const QString &name, QObject *parent)
  : QueryStation(name, parent)
 {
 }
 
-ArtistStation::~ArtistStation()
+TrackStation::~TrackStation()
 {
 }
 
-void ArtistStation::search()
+void TrackStation::search()
 {
-    QNetworkReply *reply = ella::Artist::search(name());
+    QNetworkReply *reply = ella::Track::search(name());
     connect( reply, SIGNAL(finished()), SLOT(onGotSearch()));
 }
 
-void ArtistStation::onGotSearch()
+void TrackStation::onGotSearch()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     if (reply->error() != QNetworkReply::NoError) {
@@ -29,17 +29,17 @@ void ArtistStation::onGotSearch()
         stop();
         return;
     }
-    QList<ella::Artist> artists = ella::Artist::list(reply);
-    if(artists.size() == 0) {
+    QList<ella::Track> tracks = ella::Track::list(reply);
+    if(tracks.size() == 0) {
         emit error(tr("This item is not available from streaming"));
         stop();
         return;
     }
-    QNetworkReply *reply2 = artists[0].getSimilarTracks(ella::Ella::Playlist);
+    QNetworkReply *reply2 = tracks[0].getSimilar(ella::Track::SearchParams(), ella::Ella::Playlist);
     connect(reply2, SIGNAL(finished()), this, SLOT(onGotSimilar()));
 }
 
-void ArtistStation::onGotSimilar()
+void TrackStation::onGotSimilar()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     if (reply->error() != QNetworkReply::NoError) {
@@ -48,6 +48,6 @@ void ArtistStation::onGotSimilar()
         return;
     }
 
-    QList<ella::Track> tracks = ella::Artist::getSimilarTracks(reply).values();
+    QList<ella::Track> tracks = ella::Track::getSimilar (reply).values();
     setTracks(tracks);
 }

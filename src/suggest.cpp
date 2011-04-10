@@ -6,7 +6,7 @@
 #include <QNetworkReply>
 
 #include <ella/artist.h>
-#include <ella/tag.h>
+#include <ella/track.h>
 
 #include "suggest.h"
 
@@ -147,7 +147,7 @@ ArtistSuggest::~ArtistSuggest()
 
 void ArtistSuggest::autoSuggest()
 {
-    QNetworkReply *reply = ella::Artist(text()).search();
+    QNetworkReply *reply = ella::Artist::search(text());
     connect(reply, SIGNAL(finished()), SLOT(onGotSearch()));
 }
 
@@ -165,29 +165,34 @@ void ArtistSuggest::onGotSearch()
     showCompletion(choices);
 }
 
-/*** TagSuggest ***/
+/*** TrackSuggest ***/
 
-TagSuggest::TagSuggest(QLineEdit *parent)
+TrackSuggest::TrackSuggest(QLineEdit *parent)
     : SuggestCompletion(parent)
 {
 }
 
-TagSuggest::~TagSuggest()
+TrackSuggest::~TrackSuggest()
 {
 }
 
-void TagSuggest::autoSuggest()
+void TrackSuggest::autoSuggest()
 {
-    QNetworkReply *reply = ella::Tag(text()).search();
+    QNetworkReply *reply = ella::Track::search(text());
     connect(reply, SIGNAL(finished()), SLOT(onGotSearch()));
 }
 
-void TagSuggest::onGotSearch()
+void TrackSuggest::onGotSearch()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     if (reply->error() != QNetworkReply::NoError) {
         return;
     }
-    QList<QString> tags = ella::Tag::list(reply).values();
-    showCompletion(tags);
+    QList<ella::Track> tracks = ella::Track::list(reply);
+    QStringList choices;
+    for (int i = 0; i < tracks.size(); ++i) {
+        ella::Track track = tracks[i];
+        choices << QString("%1 - %2").arg(track.artistName()).arg(track.title());
+    }
+    showCompletion(choices);
 }

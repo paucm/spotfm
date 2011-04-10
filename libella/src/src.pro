@@ -1,5 +1,5 @@
 TEMPLATE = lib
-CONFIG += warn_on thread qt staticlib
+CONFIG += warn_on thread qt staticlib 
 
 TARGET = ella
 
@@ -12,11 +12,15 @@ DESTDIR = ../../build
 SOURCES += ws.cpp \
            xmlquery.cpp \
            artist.cpp \
-           tag.cpp
+           track.cpp \
+           tag.cpp \
+           ella.cpp
 
 HEADERS += ../include/ella/ws.h \
            xmlquery.cpp \
            ../include/ella/artist.h \
-           ../include/ella/tag.h 
+           ../include/ella/track.h \
+           ../include/ella/tag.h \
+           ../include/ella/ella.h
 
 INCLUDEPATH += ../include
