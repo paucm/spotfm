@@ -9,7 +9,6 @@
 
 class Radio;
 class Track;
-class Station;
 class QCloseEvent;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
@@ -38,7 +37,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onRadioError(const QString &msg);
         void enableSkipButton();
 
-        void stationEditChanged(const QString &text);
+        void onNewPlaylist();
 
     protected:
         void closeEvent(QCloseEvent *event);

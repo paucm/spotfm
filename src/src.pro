@@ -13,15 +13,16 @@ SOURCES += radio.cpp \
            main.cpp \
            soundfeeder.cpp \
            track.cpp \
-           station.cpp \
-           artiststation.cpp \
-           trackstation.cpp \
            mainwindow.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
            aboutdialog.cpp \
            suggest.cpp \
            searchbox.cpp \
+           playlistresolver.cpp \
+           playlistcontrol.cpp \
+           playlistwidget.cpp \
+           playlistcontrolwrapper.cpp \
            spotfmapp.cpp  
 
 HEADERS += spotifysession.h \
@@ -32,15 +33,16 @@ HEADERS += spotifysession.h \
            chunk.h \
 		   audio.h \
            track.h \
-           station.h \
-           artiststation.h \
-           trackstation.h \
            mainwindow.h \
            logindialog.h \
            albumimagefetcher.h \
            aboutdialog.h \
            suggest.h \
            searchbox.h \
+           playlistresolver.h \
+           playlistwidget.h \
+           playlistcontrol.h \
+           playlistcontrolwrapper.h \
            spotfmapp.h
 
 FORMS += mainwindow.ui \

@@ -9,14 +9,15 @@
 
 #include <libspotify/api.h>
 
+#include <ella/track.h>
+
 #include "audio.h"
 #include "chunk.h"
 #include "track.h"
 
+class PlaylistResolver;
 class SpotifySession;
-class SpotifyQuery;
 class SoundFeeder;
-class Station;
 
 class Radio: public QObject {
   Q_OBJECT
@@ -46,8 +47,9 @@ class Radio: public QObject {
     bool isExiting() const { return m_isExiting; }
     bool isPlaying() const { return m_state == Playing; }
 
-    void playStation(Station *station);
-    Station *station() const { return m_station; }
+    void play(const QList<ella::Track> tracks);
+    void stop();
+    void skipTrack();
 
     void pause() { setState(Paused); }
     void unpause()
@@ -55,8 +57,6 @@ class Radio: public QObject {
         setState(Playing);
         m_playCondition.wakeAll();
     }
-    void stopStation();
-    void skipTrack();
 
     State state() const { return m_state; }
 
@@ -89,7 +89,7 @@ class Radio: public QObject {
     SoundFeeder *m_soundFeeder;
 
     static Radio *s_self;
-    Station *m_station;
+    PlaylistResolver *m_playlistResolver;
 
     Track m_currentTrack;
     int m_trackPos;

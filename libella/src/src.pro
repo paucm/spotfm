@@ -14,13 +14,13 @@ SOURCES += ws.cpp \
            artist.cpp \
            track.cpp \
            tag.cpp \
-           ella.cpp
+           util.cpp
 
 HEADERS += ../include/ella/ws.h \
            xmlquery.cpp \
            ../include/ella/artist.h \
            ../include/ella/track.h \
            ../include/ella/tag.h \
-           ../include/ella/ella.h
+           ../include/ella/util.h
 
 INCLUDEPATH += ../include

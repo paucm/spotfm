@@ -1,9 +1,9 @@
 #include <cstdlib>
 
 #include "radio.h"
+#include "playlistresolver.h"
 #include "spotifysession.h"
 #include "soundfeeder.h"
-#include "station.h"
 #ifdef Q_OS_WIN32
 #include "openal-audio.h"
 #else
@@ -21,30 +21,31 @@ Radio::Radio()
  , m_isExiting(false)
  , m_state(Stopped)
 {
-  
     qRegisterMetaType<Chunk>();
     s_self = this;
 
+    m_playlistResolver = new PlaylistResolver(this);
+
+    connect(m_playlistResolver, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
+    //connect(m_playlistResolver, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     connect(SpotifySession::self(), SIGNAL(playTokenLost()), this, SLOT(onPlayTokenLost()));
   
     initSound();
     m_soundFeeder = new SoundFeeder(this);
     connect(m_soundFeeder, SIGNAL(pcmWritten(Chunk)), this, SLOT(onPcmWritten(Chunk)));
     m_soundFeeder->start();
-
-    m_station = 0;
 }
 
 Radio::~Radio()
 {
     exit();
-	delete m_snd;
+    delete m_snd;
     delete m_soundFeeder;
 }
 
 void Radio::exit()
 {
-    stopStation();
+    stop();
     m_isExiting = true;
     m_pcmWaitCondition.wakeAll();
     m_soundFeeder->wait();
@@ -72,7 +73,7 @@ void Radio::onTrackAvailable()
 
 void Radio::play()
 {
-    m_currentTrack = m_station->takeNextTrack();
+    m_currentTrack = m_playlistResolver->takeNextTrack();
     if (m_currentTrack.isValid()) {
         clearSoundQueue();
         m_pcmMutex.lock();
@@ -88,7 +89,7 @@ void Radio::play()
         emit playing(m_currentTrack);
     }
     else {
-        stopStation();
+        stop();
         emit error(QString(tr("Playlist finished")));
     }
 }
@@ -142,18 +143,15 @@ void Radio::clearSoundQueue()
     m_dataMutex.unlock();
 }
 
-void Radio::playStation(Station *station)
+void Radio::play(const QList<ella::Track> tracks)
 {
-    m_station = station;
-    connect(m_station, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
-    connect(m_station, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
-    m_station->start();
+    m_playlistResolver->setPlaylist(tracks);
+    m_playlistResolver->start();
 }
 
-void Radio::stopStation()
+void Radio::stop()
 {
-    m_station->stop();
-    delete m_station;
+    m_playlistResolver->stop();
     sp_session_player_play(SpotifySession::self()->session(), false);
     sp_session_player_unload(SpotifySession::self()->session());
     clearSoundQueue();
@@ -169,6 +167,6 @@ void Radio::skipTrack()
 
 void Radio::onPlayTokenLost()
 {
-    stopStation();
+    stop();
     emit error(QString(tr("Music is being played with this account at other client")));
 }

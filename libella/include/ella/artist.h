@@ -5,8 +5,7 @@
 #include <QMap>
 #include <QList>
 
-#include <ella/ella.h>
-#include <ella/track.h>
+#include <ella/util.h>
 
 class QNetworkReply;
 
@@ -31,7 +30,7 @@ namespace ella {
                 return m_name;
             }
 
-            QString bmatid() const
+            QString id() const
             {
                 return m_id;
             }
@@ -41,9 +40,6 @@ namespace ella {
 
             QNetworkReply* getSimilar() const;
             static QMap<int, Artist> getSimilar(QNetworkReply *);
-
-            QNetworkReply* getSimilarTracks(Ella::SimilarityType type = Ella::Default) const;
-            static QMap<int, Track> getSimilarTracks(QNetworkReply *);
 
         private:
             QString m_id;

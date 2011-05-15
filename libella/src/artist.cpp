@@ -1,7 +1,7 @@
 #include <QNetworkReply>
 #include <QtGlobal>
 
-#include "xmlquery.h"
+#include <ella/xmlquery.h>
 #include <ella/artist.h>
 #include <ella/ws.h>
 
@@ -42,7 +42,7 @@ QNetworkReply* Artist::getSimilar() const
     params["limit"] = "50";
     return ella::ws::get(path, params);
 }
- 
+
 QMap<int, Artist> Artist::getSimilar(QNetworkReply *reply)
 {
      QMap<int, Artist> artists;
@@ -58,20 +58,3 @@ QMap<int, Artist> Artist::getSimilar(QNetworkReply *reply)
      return artists;
 }
 
-QNetworkReply* Artist::getSimilarTracks(Ella::SimilarityType type) const
-{
-    QString path = "/collections/bmat/artists/" + m_id + "/similar/tracks";
-    QMap<QString, QString> p;
-
-    QString t = Ella::similarityTypeToString(type);
-    if (!t.isEmpty()) p["similarity_type"] = t;
-    p["fetch_metadata"] = "track,artist,bmat_artist_id";
-    p["limit"] = "50";
-
-    return ella::ws::get(path, p);
-}
-
-QMap<int, Track> Artist::getSimilarTracks(QNetworkReply *reply)
-{
-    return Track::getSimilar(reply);
-}

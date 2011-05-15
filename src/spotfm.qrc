@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons" >
+    <file>icons/list-add.png</file>
+    <file>icons/list-remove.png</file>
     <file>icons/spotfm.png</file>
     <file>icons/spotify-core-logo-128x128.png</file>
     <file>icons/no_cover.gif</file>

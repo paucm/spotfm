@@ -17,8 +17,9 @@
    You should have received a copy of the GNU General Public License
    along with liblastfm.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "xmlquery.h"
 #include <QStringList>
+
+#include <ella/xmlquery.h>
 
 using namespace ella;
 

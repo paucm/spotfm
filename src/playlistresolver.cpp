@@ -3,14 +3,15 @@
 
 #include <ella/track.h>
 
-#include "station.h"
-#include "spotifyquery.h"
+#include "playlistresolver.h"
 #include "spotifysession.h"
+#include "spotifyquery.h"
 
 #define QUEUE_SIZE 2
 
-QueryStation::QueryStation(const QString &name, QObject *parent)
-    : Station(name, parent)
+
+PlaylistResolver::PlaylistResolver(QObject *parent)
+    : QObject(parent)
 {
     m_sp_query = new SpotifyQuery(SpotifySession::self()->session());
     connect(m_sp_query, SIGNAL(queryCompleted(Track)), this, SLOT(onQueryCompleted(Track)));
@@ -27,12 +28,12 @@ QueryStation::QueryStation(const QString &name, QObject *parent)
     m_stop = false;
 }
 
-QueryStation::~QueryStation()
+PlaylistResolver::~PlaylistResolver()
 {
     delete m_sp_query;
 }
 
-Track QueryStation::takeNextTrack()
+Track PlaylistResolver::takeNextTrack()
 {
     if (m_queue.isEmpty())
         return Track();
@@ -42,12 +43,12 @@ Track QueryStation::takeNextTrack()
     return track;
 }
 
-void QueryStation::fill()
+void PlaylistResolver::fill()
 {
     if (m_stop) return;
 
     if (m_tracks.isEmpty()) {
-        search();
+        stop();
         return;
     }
     
@@ -60,14 +61,16 @@ void QueryStation::fill()
     }
 }
 
-void QueryStation::stop()
+void PlaylistResolver::stop()
 {
     m_stop = true;
     if (m_timer->isActive())
         m_timer->stop();
+    m_queue.clear();
+    m_pending.clear();
 }
 
-void QueryStation::onMetadataUpdated()
+void PlaylistResolver::onMetadataUpdated()
 {
     if(m_pending.isEmpty()) return;
 
@@ -81,13 +84,15 @@ void QueryStation::onMetadataUpdated()
     }
 }
 
-void QueryStation::setTracks(const QList<ella::Track> &tracks)
+void PlaylistResolver::setPlaylist(const QList<ella::Track> &tracks)
 {
+    if(!m_stop)
+        stop();
     m_tracks = tracks;
     fill();
 }
 
-void QueryStation::onQueryCompleted(const Track &t)
+void PlaylistResolver::onQueryCompleted(const Track &t)
 {
     if (m_stop) return;
     
@@ -96,16 +101,17 @@ void QueryStation::onQueryCompleted(const Track &t)
     m_timer->start();
 }
 
-void QueryStation::onQueryError(const QString &query, const QString &msg)
+void PlaylistResolver::onQueryError(const QString &query, const QString &msg)
 {
     qDebug("onQueryError: %s : %s", query.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
     m_tracks.pop_back();
     m_timer->start();
 }
 
-void QueryStation::onQueryNoResults(const QString &query)
+void PlaylistResolver::onQueryNoResults(const QString &query)
 {
     qDebug("onQueryNoResults: %s", query.toLocal8Bit().constData());
     m_tracks.pop_back();
     m_timer->start();
 }
+

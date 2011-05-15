@@ -6,11 +6,10 @@
 #include "mainwindow.h"
 #include "spotifysession.h"
 #include "radio.h"
-#include "artiststation.h"
-#include "trackstation.h"
 #include "track.h"
 #include "albumimagefetcher.h"
 #include "aboutdialog.h"
+#include "playlistwidget.h"
 
 
 #define TAB_STATION 0
@@ -25,8 +24,6 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
-    connect(stationEdit, SIGNAL(returnPressed()), this, SLOT(onPlay()));
-    connect(playButton, SIGNAL(clicked()), this, SLOT(onPlay()));
     connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
@@ -44,14 +41,12 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
     connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
 
-    connect(stationEdit, SIGNAL(textChanged(QString)), this, SLOT(stationEditChanged(QString)));
-    connect(stationCombo, SIGNAL(currentIndexChanged(QString)), stationEdit, SLOT(onSuggestChanged(QString)));
+    connect(playlistWidget, SIGNAL(newPlaylist()), this, SLOT(onNewPlaylist()));
+    connect(startButton, SIGNAL(clicked()), this, SLOT(onPlay()));
 
     defaultWindow();
     setupTrayIcon();
     helloLabel->setText(QString("Hello %1,").arg(SpotifySession::self()->username()));
-
-    
 }
 
 MainWindow::~MainWindow()
@@ -66,16 +61,13 @@ void MainWindow::defaultWindow()
     artistLabel->setText(QString());
     albumLabel->setText(QString());
     imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
-    frame->setEnabled(false);
+    //frame->setEnabled(false);
     toogleButtons(false);
     actionStop->setEnabled(false);
     actionSkip->setEnabled(false);
     timeLabel->setText(QString(tr("--:--")));
     totalTimeLabel->setText(QString(tr("--:--")));
     slider->setValue(0);
-    stationEdit->setFocus();
-    actionPlay->setEnabled(!stationEdit->text().isEmpty());
-    playButton->setEnabled(!stationEdit->text().isEmpty());
     tabWidget->setCurrentIndex(TAB_STATION);
 }
 
@@ -137,15 +129,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
-void MainWindow::stationEditChanged(const QString &text)
-{
-    if(m_radio->state() == Radio::Stopped) {
-        bool enabled = !text.isEmpty();
-        actionPlay->setEnabled(enabled);
-        playButton->setEnabled(enabled);
-    }
-}
-
 void MainWindow::onPlay()
 {
     if (!SpotifySession::self()->isLoggedIn()) {
@@ -154,9 +137,9 @@ void MainWindow::onPlay()
     }
 
     if (m_radio->state() == Radio::Stopped) {
-        stationEdit->onCompleted();
         createStation();
     }
+
     else if (m_radio->state() == Radio::Paused) {
         toogleButtons(true);
         m_radio->unpause();
@@ -167,11 +150,11 @@ void MainWindow::onPlaying(const Track &track)
 {
     toogleButtons(true);
     actionStop->setEnabled(true);
-    frame->setEnabled(true);
+    //frame->setEnabled(true);
     tabWidget->setCurrentIndex(TAB_PLAYING);
     
-    Ui_MainWindow::statusBar->showMessage(
-        QString(tr("%1 radio").arg(m_radio->station()->name())));
+    /*Ui_MainWindow::statusBar->showMessage(
+        QString(tr("%1 radio").arg(m_radio->station()->name())));*/
     
     QString title = track.title();
     QString artist = track.artist();
@@ -181,8 +164,11 @@ void MainWindow::onPlaying(const Track &track)
     m_trayIcon->setToolTip(msg);
 
     trackLabel->setText(title);
-    artistLabel->setText(artist);
+    trackLabel->adjustSize();
+    artistLabel->setText(QString("by %1").arg(artist));
+    artistLabel->adjustSize();
     albumLabel->setText(track.album());
+    albumLabel->adjustSize();
     int duration = track.duration();
     QString total = QString("%1:%2")
         .arg((duration / 1000) / 60, 2, 10, QLatin1Char('0'))
@@ -219,9 +205,8 @@ void MainWindow::onTrackProgress(int pos)
 
 void MainWindow::onStop()
 {
-    m_radio->stopStation();
+    m_radio->stop();
     defaultWindow();
-    Ui_MainWindow::statusBar->showMessage(QString());
 }
 
 void MainWindow::onPause()
@@ -244,16 +229,15 @@ void MainWindow::onRadioError(const QString &msg)
 
 void MainWindow::createStation()
 {
-    Station *station;
-    if(!(stationEdit->text().isEmpty())) {
-        actionPlay->setEnabled(false);
-        playButton->setEnabled(false);
-        if (stationCombo->currentText() == "Artist")
-            station = new ArtistStation(stationEdit->text());
-        else
-            station = new TrackStation(stationEdit->text());
-        m_radio->playStation(station);
-    }
+    startButton->setEnabled(false);
+    playlistWidget->generate();
+}
+
+void MainWindow::onNewPlaylist()
+{
+    startButton->setEnabled(true);
+    QList<ella::Track> tracks = playlistWidget->playlist();
+    m_radio->play(tracks);
 }
 
 void MainWindow::toogleButtons(bool enabled)

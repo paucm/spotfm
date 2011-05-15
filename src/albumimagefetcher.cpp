@@ -28,7 +28,8 @@ QImage AlbumImageFetcher::readImage()
     size_t size;
 
     const void *buffer = sp_image_data(m_image, &size);
-    i.loadFromData((const uchar *)buffer, size);
+    i.loadFromData((const uchar *)buffer,size);
+    i = i.scaled(200, 200);
     return i;
 }
 

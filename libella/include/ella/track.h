@@ -7,8 +7,11 @@
 #include <QPair>
 #include <QByteArray>
 #include <QVariant>
+#include <QStringList>
 
-#include <ella/ella.h>
+#include <ella/util.h>
+#include <ella/artist.h>
+#include <ella/xmlquery.h>
 
 class QNetworkReply;
 
@@ -17,20 +20,20 @@ namespace ella {
     class Track
     {
         public:
-             /** 
+             /**
               * The following are the various search parameters to the search() and similar() functions
               *
-              *  title      QString 
-              *  artist     QString
-              *  artist_id  QByteArray
-              *  genre      QString 
-              *  speed      QString [slow, medium, fast]
-              *  mood       QString [blue, happy, furious, acoustic, party, relaxed]
+              *  Title      QString
+              *  ArtistName QString
+              *  ArtistId   QByteArray
+              *  Genre      QString
+              *  Speed      Util::Speed
+              *  Mood       Util::Mood
               */
 
             enum SearchParam {
                 Title,
-                Artist,
+                ArtistName,
                 ArtistId,
                 Genre,
                 Speed,
@@ -45,26 +48,44 @@ namespace ella {
 
             QByteArray id() const { return m_id; }
             QString title() const { return m_title; }
-            
+
             QByteArray artistId() const { return m_artistId; }
             QString artistName() const { return m_artistName; }
 
-            static QNetworkReply *search(const SearchParams &params = SearchParams(), int limit=-1);
+            QMap<int, Util::Mood> moods() const { return m_moods; }
+
+            int bpm() const { return m_bpm; }
+            int year() const { return m_year; }
+            QStringList genres() const { return m_genres; }
+
+            static QNetworkReply *search(
+                    const SearchParams &params = SearchParams(),
+                    int limit=-1);
             static QNetworkReply *search(const QString &query, int limit=-1);
             static QList<Track> list(QNetworkReply *);
 
-            QNetworkReply* getSimilar(const SearchParams &params = SearchParams(),
-                                      Ella::SimilarityType type = Ella::Default) const;
+            static QNetworkReply* getSimilar(
+                    const Artist &artist,
+                    const SearchParams &params = SearchParams(),
+                    Util::SimilarityType type = Util::Default);
+            QNetworkReply* getSimilar(
+                    const SearchParams &params = SearchParams(),
+                    Util::SimilarityType type = Util::Default) const;
             static QMap<int, Track> getSimilar(QNetworkReply *);
 
         private:
             static QString searchParamsToQuery(const SearchParams &params);
             static QByteArray searchParamToString(SearchParam param);
+            static void parseMetadata(XmlQuery xml, Track &track);
 
             QByteArray m_id;
             QString m_title;
             QByteArray m_artistId;
             QString m_artistName;
+            QMap<int, Util::Mood> m_moods;
+            int m_bpm;
+            int m_year;
+            QStringList m_genres;
     };
 }
 

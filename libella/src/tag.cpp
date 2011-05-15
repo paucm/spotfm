@@ -1,7 +1,7 @@
 #include <QNetworkReply>
 #include <QtGlobal>
 
-#include "xmlquery.h"
+#include <ella/xmlquery.h>
 #include <ella/tag.h>
 #include <ella/ws.h>
 
