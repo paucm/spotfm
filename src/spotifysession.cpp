@@ -69,6 +69,7 @@ int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_au
     m.lock();
     Chunk c;
     c.m_data = malloc(numFrames * sizeof(int16_t) * format->channels);
+	memset(c.m_data, 0, numFrames * sizeof(int16_t) * format->channels);
     memcpy(c.m_data, frames, numFrames * sizeof(int16_t) * format->channels);
     c.m_dataFrames = numFrames;
     c.m_rate = format->sample_rate;
