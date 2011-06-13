@@ -36,10 +36,6 @@ void OpenalAudio::prepare()
 {
     alGenBuffers(NUM_BUFFERS, m_buffer);
     alGenSources(1, &m_source);
-    if(alGetError() != AL_NO_ERROR) {
-        qDebug("Error generating :(");
-        return;
-    }
     m_frame = 0;
 }
 
@@ -51,6 +47,7 @@ void OpenalAudio::clear()
     }
     alDeleteBuffers(NUM_BUFFERS, m_buffer);
     alDeleteSources(1, &m_source);
+    alGetError(); // clear any error messages
 }
 
 void OpenalAudio::play(Chunk &chunk)
