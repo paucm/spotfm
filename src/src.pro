@@ -53,10 +53,10 @@ RESOURCES += spotfm.qrc
 win32 {
     SOURCES += openal-audio.cpp 
     HEADERS += openal-audio.h
-    INCLUDEPATH += ../libspotify-0.0.7-win32/include \
-                   ../openal-soft-1.13-bin/include
-    LIBS += ../libspotify-0.0.7-win32/lib/libspotify.lib \
-            -L ../openal-soft-1.13-bin/lib/Win32 \
+    INCLUDEPATH += ../../libspotify-0.0.7-win32/include \
+                   ../../openal-soft-1.13-bin/include
+    LIBS += ../../libspotify-0.0.7-win32/lib/libspotify.lib \
+            -L ../../openal-soft-1.13-bin/lib/Win32 \
             -lOpenAL32.dll
 }
 

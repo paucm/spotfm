@@ -43,6 +43,6 @@ void SoundFeeder::run()
         if (Radio::self()->isPlaying()) {
             emit pcmWritten(c);
         }
-        //usleep(10000);
+        usleep(10000);
     }
 }

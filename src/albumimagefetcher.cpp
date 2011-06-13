@@ -33,7 +33,7 @@ QImage AlbumImageFetcher::readImage()
     return i;
 }
 
-void AlbumImageFetcher::imageLoaded(sp_image *image, void *userdata)
+void SP_CALLCONV AlbumImageFetcher::imageLoaded(sp_image *image, void *userdata)
 {
     AlbumImageFetcher *aif = static_cast<AlbumImageFetcher *>(userdata);
 

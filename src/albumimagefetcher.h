@@ -20,7 +20,7 @@ class AlbumImageFetcher : public QObject
         void finished(QImage);
 
     private:
-        static void imageLoaded(sp_image *image, void *userdata);
+        static void SP_CALLCONV imageLoaded(sp_image *image, void *userdata);
         QImage readImage();
         sp_image *m_image;
 };
