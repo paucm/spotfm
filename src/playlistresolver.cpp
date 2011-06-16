@@ -14,9 +14,9 @@ PlaylistResolver::PlaylistResolver(QObject *parent)
     : QObject(parent)
 {
     m_sp_query = new SpotifyQuery(SpotifySession::self()->session());
-    connect(m_sp_query, SIGNAL(queryCompleted(Track)), this, SLOT(onQueryCompleted(Track)));
-    connect(m_sp_query, SIGNAL(queryError(QString, QString)), this, SLOT(onQueryError(QString, QString)));
-    connect(m_sp_query, SIGNAL(queryNoResults(QString)), this, SLOT(onQueryNoResults(QString)));
+    connect(m_sp_query, SIGNAL(queryCompleted()), this, SLOT(onQueryCompleted()));
+    connect(m_sp_query, SIGNAL(queryError(QString)), this, SLOT(onQueryError(QString)));
+    connect(m_sp_query, SIGNAL(queryNoResults()), this, SLOT(onQueryNoResults()));
 
     m_timer = new QTimer(this);
     m_timer->setInterval(500);
@@ -51,13 +51,10 @@ void PlaylistResolver::fill()
         stop();
         return;
     }
-    
+
     if (m_queue.size() < QUEUE_SIZE) {
-        ella::Track track = m_tracks.back();
-        QString query = QString("artist:%1 track:%2").arg(track.artistName(), track.title());
-        query.replace(QRegExp("\\[[^\\]]*\\]"), "");
-        query.replace(QRegExp("\\([^\\)]*\\)"), "");
-        m_sp_query->execute(query);
+        Track track(m_tracks.back());
+        m_sp_query->execute(track);
     }
 }
 
@@ -92,25 +89,32 @@ void PlaylistResolver::setPlaylist(const QList<ella::Track> &tracks)
     fill();
 }
 
-void PlaylistResolver::onQueryCompleted(const Track &t)
+void PlaylistResolver::onQueryCompleted()
 {
     if (m_stop) return;
-    
+    Track t = m_sp_query->currentTrack();
     m_pending.append(t);
     m_tracks.pop_back();
     m_timer->start();
 }
 
-void PlaylistResolver::onQueryError(const QString &query, const QString &msg)
+void PlaylistResolver::onQueryError(const QString &msg)
 {
-    qDebug("onQueryError: %s : %s", query.toLocal8Bit().constData(), msg.toLocal8Bit().constData());
+    Track t = m_sp_query->currentTrack();
+    qDebug("onQueryError: (%s - %s) : %s",
+            t.artist().toLocal8Bit().constData(),
+            t.title().toLocal8Bit().constData(),
+            msg.toLocal8Bit().constData());
     m_tracks.pop_back();
     m_timer->start();
 }
 
-void PlaylistResolver::onQueryNoResults(const QString &query)
+void PlaylistResolver::onQueryNoResults()
 {
-    qDebug("onQueryNoResults: %s", query.toLocal8Bit().constData());
+    Track t = m_sp_query->currentTrack();
+    qDebug("onQueryNoResults: %s - %s",
+            t.artist().toLocal8Bit().constData(),
+            t.title().toLocal8Bit().constData());
     m_tracks.pop_back();
     m_timer->start();
 }

@@ -25,6 +25,11 @@ namespace ella {
             {
             }
 
+            Artist(const QString &name)
+                : m_name(name)
+            {
+            }
+
             QString name() const
             {
                 return m_name;

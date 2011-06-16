@@ -42,6 +42,7 @@ namespace ella {
             typedef QPair<SearchParam, QVariant> SearchParamEntry;
             typedef QList<SearchParamEntry> SearchParams;
 
+            Track();
             Track(const QByteArray &id, const QString &title,
                   const QByteArray &artistId, const QString &artistName);
             Track(const QByteArray &id);
@@ -60,8 +61,9 @@ namespace ella {
 
             static QNetworkReply *search(
                     const SearchParams &params = SearchParams(),
+                    int offset=0,
                     int limit=-1);
-            static QNetworkReply *search(const QString &query, int limit=-1);
+            static QNetworkReply *search(const QString &query, int offset=0, int limit=-1);
             static QList<Track> list(QNetworkReply *);
 
             static QNetworkReply* getSimilar(

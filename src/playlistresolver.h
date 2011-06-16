@@ -27,11 +27,11 @@ class PlaylistResolver: public QObject
 
     signals:
         void trackAvailable();
-        
+
     protected slots:
-        void onQueryCompleted(const Track &t);
-        void onQueryError(const QString &q, const QString &msg);
-        void onQueryNoResults(const QString &q);
+        void onQueryCompleted();
+        void onQueryError(const QString &msg);
+        void onQueryNoResults();
 
         void fill();
         void onMetadataUpdated();

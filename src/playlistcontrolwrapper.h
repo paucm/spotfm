@@ -24,6 +24,7 @@ class PlaylistControlWrapper : public QObject
         void removeFromLayout();
 
         ella::Track::SearchParamEntry toParam() const;
+        QString needSimilarityQuery(bool *ok) const;
 
     signals:
         void removeControl();

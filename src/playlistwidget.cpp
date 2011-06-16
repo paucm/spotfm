@@ -1,3 +1,7 @@
+#include <ctime>
+
+#include <ella/util.h>
+
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QToolButton>
@@ -6,6 +10,7 @@
 
 #include "playlistwidget.h"
 #include "playlistcontrolwrapper.h"
+
 
 PlaylistWidget::PlaylistWidget(QWidget *parent)
     : QWidget(parent)
@@ -40,6 +45,11 @@ PlaylistWidget::PlaylistWidget(QWidget *parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     addNewControl();
+
+    //Initialize random number generator
+    time_t now;
+    now = time(NULL);
+    qsrand(now);
 }
 
 PlaylistWidget::~PlaylistWidget()
@@ -68,18 +78,36 @@ void PlaylistWidget::generate()
 {
     ella::Track::SearchParams params;
     QList<PlaylistControlWrapper *>::Iterator iter = m_controls.begin();
+    bool ok;
+    QString q;
     for(; iter != m_controls.end(); ++iter) {
         PlaylistControlWrapper *control = *iter;
-        params.append(control->toParam());
+        q = control->needSimilarityQuery(&ok);
+        if (!ok)
+            params.append(control->toParam());
     }
-    QNetworkReply *reply = ella::Track::search(params, 50);
-    connect(reply, SIGNAL(finished()), this, SLOT(onGenerate()));
+
+    if (q.isEmpty()) {
+        QNetworkReply *reply = ella::Track::search(params, 0, 50);
+        connect(reply, SIGNAL(finished()), this, SLOT(onSearchGenerate()));
+    }
+    else {
+        QNetworkReply *reply = ella::Track::getSimilar(q, params, ella::Util::Playlist);
+        connect(reply, SIGNAL(finished()), this, SLOT(onSimilarGenerate()));
+    }
 }
 
-void PlaylistWidget::onGenerate()
+void PlaylistWidget::onSearchGenerate()
 {
     QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
     m_tracks = ella::Track::list(reply);
+    emit newPlaylist();
+}
+
+void PlaylistWidget::onSimilarGenerate()
+{
+    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+    m_tracks = ella::Track::getSimilar(reply).values();
     emit newPlaylist();
 }
 

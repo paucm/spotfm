@@ -47,6 +47,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void defaultWindow();
         void createStation();
         void toogleButtons(bool enabled);
+
+        void addMoods(const Track &track);
         
         Radio *m_radio;
         QSystemTrayIcon *m_trayIcon;

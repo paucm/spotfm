@@ -35,7 +35,8 @@ class PlaylistWidget: public QWidget
         void newPlaylist();
 
     private slots:
-        void onGenerate();
+        void onSearchGenerate();
+        void onSimilarGenerate();
 
     private:
         QGridLayout *m_layout;

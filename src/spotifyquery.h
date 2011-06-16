@@ -17,19 +17,20 @@ class SpotifyQuery : public QObject
         SpotifyQuery(sp_session *session);
         ~SpotifyQuery();
 
-        void execute(const QString &query);
+        void execute(const Track &track);
+        Track currentTrack() const { return m_track; }
 
     signals:
-        void queryCompleted(const Track &track);
-        void queryError(const QString &query, const QString &msg);
-        void queryNoResults(const QString &query);
+        void queryCompleted();
+        void queryError(const QString &msg);
+        void queryNoResults();
 
     private:
         //Spotify callback
         static void SP_CALLCONV searchComplete(sp_search *search, void *userdata);
         sp_session *m_session;
         sp_search *m_search;
-        QString m_query;
+        Track m_track;
 };
 
 #endif

@@ -36,9 +36,12 @@ class PlaylistControl : public QObject {
         virtual QWidget *match() { return m_match; }
         virtual QWidget *input() { return m_input; }
         virtual ella::Track::SearchParamEntry toParam() const = 0;
+        virtual QString needSimilarityQuery(bool *ok) const { *ok=false; return QString(); }
 
         static PlaylistControl *get(const QString &name = QString());
         static QStringList controls();
+
+
 
    protected:
         QWidget *m_input;
@@ -59,6 +62,7 @@ class ArtistControl : public PlaylistControl {
 
         void init();
         ella::Track::SearchParamEntry toParam() const;
+        QString needSimilarityQuery(bool *ok) const;
 };
 
 
@@ -85,6 +89,19 @@ class GenreControl : public PlaylistControl {
 
         void init();
         ella::Track::SearchParamEntry toParam() const;
+};
+
+
+class SpeedControl : public PlaylistControl {
+
+    Q_OBJECT
+
+public:
+    SpeedControl();
+    ~SpeedControl() {}
+
+    void init();
+    ella::Track::SearchParamEntry toParam() const;
 };
 
 #endif

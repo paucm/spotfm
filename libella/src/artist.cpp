@@ -37,7 +37,12 @@ QList<Artist> Artist::list(QNetworkReply *reply)
 
 QNetworkReply* Artist::getSimilar() const
 {
-    QString path = "/collections/bmat/artists/" + m_id + "/similar/artists";
+    QString path = "/collections/bmat/artists/";
+    if (!m_id.isEmpty())
+        path += m_id;
+    else if(!m_name.isEmpty())
+        path += m_name;
+    path += "/similar/artists";
     QMap<QString, QString> params;
     params["limit"] = "50";
     return ella::ws::get(path, params);

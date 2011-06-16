@@ -26,6 +26,14 @@ namespace ella {
                 Relax
             };
             static QByteArray moodToString(Mood mood);
+
+            enum Speed {
+                Slow,
+                Medium,
+                Fast
+            };
+            static QByteArray speedToString(Speed speed);
+
     };
 };
 

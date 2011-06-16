@@ -2,6 +2,10 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QCloseEvent>
+#include <QMap>
+#include <QMapIterator>
+
+#include <ella/util.h>
 
 #include "mainwindow.h"
 #include "spotifysession.h"
@@ -10,7 +14,6 @@
 #include "albumimagefetcher.h"
 #include "aboutdialog.h"
 #include "playlistwidget.h"
-
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
@@ -183,6 +186,37 @@ void MainWindow::onPlaying(const Track &track)
         track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
     aif->fetch();
+
+    addMoods(track);
+}
+
+void MainWindow::addMoods(const Track &track)
+{
+    QMap<int, ella::Util::Mood> moods = track.ellaTrack().moods();
+    QMapIterator<int, ella::Util::Mood> iter(moods);
+    while(iter.hasNext()) {
+        iter.next();
+        switch(iter.value()) {
+            case ella::Util::Blue:
+                blueBar->setValue(iter.key());
+                break;
+            case ella::Util::Happy:
+                happyBar->setValue(iter.key());
+                break;
+            case ella::Util::Furious:
+                furiousBar->setValue(iter.key());
+                break;
+            case ella::Util::Acoustic:
+                acousticBar->setValue(iter.key());
+                break;
+            case ella::Util::Party:
+                partyBar->setValue(iter.key());
+                break;
+            case ella::Util::Relax:
+                relaxBar->setValue(iter.key());
+                break;
+        }
+    }
 }
 
 void MainWindow::onArtistImage(QImage image)

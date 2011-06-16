@@ -13,8 +13,16 @@ static QString fetch_metadata = "track,artist,bmat_artist_id,"
                                 "highlevel_moods_relaxed_probability_value,"
                                 "highlevel_moods_party_probability_value,"
                                 "highlevel_moods_sad_probability_value,"
-                                "rhythm_bpm_value,year,genre,track_genre";
+                                "rhythm_bpm_value,year,genre,track_genre,"
+                                "mood";
 
+
+Track::Track()
+{
+    m_id = "";
+    m_bpm = 0;
+    m_year = 0;
+}
 
 Track::Track(const QByteArray &id, const QString &title,
              const QByteArray &artistId, const QString &artistName)
@@ -34,18 +42,19 @@ Track::Track(const QByteArray &id)
     m_year = 0;
 }
 
-QNetworkReply *Track::search(const SearchParams &params, int limit)
+QNetworkReply *Track::search(const SearchParams &params, int offset, int limit)
 {
     QString query = searchParamsToQuery(params);
-    return search(query, limit);
+    return search(query, offset, limit);
 }
 
-QNetworkReply *Track::search(const QString &query, int limit)
+QNetworkReply *Track::search(const QString &query, int offset, int limit)
 {
     QString path = "/collections/bmat/tracks/search";
     QMap<QString, QString> params;
     params["q"] = query;
     params["fetch_metadata"] = fetch_metadata;
+    params["offset"] = QString::number(offset);
     if (limit > 0) params["limit"] =  QString::number(limit);
 
     return ella::ws::get(path, params);
@@ -89,8 +98,13 @@ QNetworkReply* Track::getSimilar(const Artist &artist,
                                  const SearchParams &params,
                                  Util::SimilarityType type)
 {
-    QString path = "/collections/bmat/artists/" + artist.id() +
-                   "/similar/tracks";
+    QString path = "/collections/bmat/artists/";
+    QString q;
+    if (!artist.id().isEmpty())
+        q = artist.id();
+    else if (!artist.name().isEmpty())
+        q = artist.name();
+    path += q + "/similar/tracks";
     QMap<QString, QString> p;
 
     QString query = searchParamsToQuery(params);
@@ -128,29 +142,40 @@ void Track::parseMetadata(XmlQuery xml, Track &track)
     track.m_artistName = xml["artist"].text();
     track.m_artistId = xml["bmat_artist_id"].text().toLocal8Bit();
 
+    QStringList moodList;
+    Q_FOREACH(XmlQuery q, xml.children("mood")) {
+        moodList << q.text();
+    }
+
     QMap<int, Util::Mood> moods;
     QString value = xml["highlevel_moods_happy_probability_value"].text();
     float v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("happy")) v = 1 - v;
     moods.insertMulti(v, Util::Happy);
 
     value = xml["highlevel_moods_acoustic_probability_value"].text();
     v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("acoustic")) v = 1 - v;
     moods.insertMulti(v, Util::Acoustic);
 
     value = xml["highlevel_moods_aggressive_probability_value"].text();
     v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("furious")) v = 1 - v;
     moods.insertMulti(v, Util::Furious);
 
     value = xml["highlevel_moods_relaxed_probability_value"].text();
     v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("relaxed")) v = 1 - v;
     moods.insertMulti(v, Util::Relax);
 
     value = xml["highlevel_moods_party_probability_value"].text();
     v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("party")) v = 1 - v;
     moods.insertMulti(v, Util::Party);
 
     value = xml["highlevel_moods_sad_probability_value"].text();
     v = value.remove(0, 1).toFloat() * 100;
+    if (!moodList.contains("blue")) v = 1 - v;
     moods.insertMulti(v, Util::Blue);
 
     track.m_moods = moods;
@@ -189,6 +214,8 @@ QString Track::searchParamsToQuery(const SearchParams &params)
         query += ":";
         if (iter->first == Mood)
             query += Util::moodToString(static_cast<Util::Mood>(iter->second.toInt()));
+        else if(iter->first == Speed)
+            query += Util::speedToString(static_cast<Util::Speed>(iter->second.toInt()));
         else
             query += iter->second.toString();
     }

@@ -33,3 +33,18 @@ QByteArray Util::moodToString(Mood mood)
             return "";
     }
 }
+
+
+QByteArray Util::speedToString(Speed speed)
+{
+    switch(speed) {
+        case Slow:
+            return "slow";
+        case Medium:
+            return "medium";
+        case Fast:
+            return "fast";
+        default:
+            return "";
+    }
+}

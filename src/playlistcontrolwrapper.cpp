@@ -80,3 +80,8 @@ void PlaylistControlWrapper::removeFromLayout()
 ella::Track::SearchParamEntry PlaylistControlWrapper::toParam() const {
     return m_control->toParam();
 }
+
+QString PlaylistControlWrapper::needSimilarityQuery(bool *ok) const
+{
+    return m_control->needSimilarityQuery(ok);
+}
