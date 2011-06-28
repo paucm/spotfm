@@ -79,20 +79,22 @@ void PlaylistWidget::generate()
     ella::Track::SearchParams params;
     QList<PlaylistControlWrapper *>::Iterator iter = m_controls.begin();
     bool ok;
-    QString q;
+    QString similarArtist;
     for(; iter != m_controls.end(); ++iter) {
         PlaylistControlWrapper *control = *iter;
-        q = control->needSimilarityQuery(&ok);
+        QString q = control->needSimilarityQuery(&ok);
         if (!ok)
             params.append(control->toParam());
+        else
+            similarArtist = q;
     }
 
-    if (q.isEmpty()) {
+    if (similarArtist.isEmpty()) {
         QNetworkReply *reply = ella::Track::search(params, 0, 50);
         connect(reply, SIGNAL(finished()), this, SLOT(onSearchGenerate()));
     }
     else {
-        QNetworkReply *reply = ella::Track::getSimilar(q, params, ella::Util::Playlist);
+        QNetworkReply *reply = ella::Track::getSimilar(similarArtist, params, ella::Util::Playlist);
         connect(reply, SIGNAL(finished()), this, SLOT(onSimilarGenerate()));
     }
 }
