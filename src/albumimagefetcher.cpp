@@ -67,10 +67,14 @@ void ArtistBiographyFetcher::fetch()
 void SP_CALLCONV ArtistBiographyFetcher::artistBrowserLoaded(sp_artistbrowse *browse, void *userdata)
 {
     ArtistBiographyFetcher *abf = static_cast<ArtistBiographyFetcher *>(userdata);
-    QString bio = sp_artistbrowse_biography(browse);
-    //Get first paragraph
-    int pos = bio.indexOf("\n");
-    if (pos > 0)
-        bio = bio.left(pos);
+    QString bio = QString::fromUtf8(sp_artistbrowse_biography(browse));
+    //Get max 1000 characters
+    int current = bio.indexOf(".");
+    int pos = 0;
+    while(current < 1000 && current != -1){
+        pos = current;
+        current = bio.indexOf(".", pos+1);
+    }
+    bio = bio.left(pos+1);
     emit abf->finished(bio);
 }
