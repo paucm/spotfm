@@ -7,7 +7,7 @@
 #include "spotifysession.h"
 #include "spotifyquery.h"
 
-#define QUEUE_SIZE 2
+#define QUEUE_SIZE 1
 
 
 PlaylistResolver::PlaylistResolver(QObject *parent)
@@ -118,4 +118,3 @@ void PlaylistResolver::onQueryNoResults()
     m_tracks.pop_back();
     m_timer->start();
 }
-

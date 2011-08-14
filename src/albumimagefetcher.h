@@ -25,5 +25,26 @@ class AlbumImageFetcher : public QObject
         sp_image *m_image;
 };
 
+
+class ArtistBiographyFetcher : public QObject
+{
+    Q_OBJECT
+
+    public:
+        ArtistBiographyFetcher(sp_session *session, sp_artist *artist);
+        ~ArtistBiographyFetcher();
+
+        void fetch();
+
+    signals:
+        void finished(QString);
+
+    private:
+        static void SP_CALLCONV artistBrowserLoaded(sp_artistbrowse *browse, void *userdata);
+        sp_artist *m_artist;
+        sp_session *m_session;
+};
+
+
 #endif
 

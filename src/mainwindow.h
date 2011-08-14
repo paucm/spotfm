@@ -33,11 +33,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
         void onPlaying(const Track &track);
         void onTrackProgress(int pos);
-        void onArtistImage(QImage);
         void onRadioError(const QString &msg);
         void enableSkipButton();
-
-        void onNewPlaylist();
 
     protected:
         void closeEvent(QCloseEvent *event);
@@ -46,10 +43,8 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void setupTrayIcon();
         void defaultWindow();
         void createStation();
-        void toogleButtons(bool enabled);
+        void tooglePlayPauseButtons(bool enabled);
 
-        void addMoods(const Track &track);
-        
         Radio *m_radio;
         QSystemTrayIcon *m_trayIcon;
 };

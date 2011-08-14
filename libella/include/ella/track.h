@@ -53,8 +53,6 @@ namespace ella {
             QByteArray artistId() const { return m_artistId; }
             QString artistName() const { return m_artistName; }
 
-            QMap<int, Util::Mood> moods() const { return m_moods; }
-
             int bpm() const { return m_bpm; }
             int year() const { return m_year; }
             QStringList genres() const { return m_genres; }
@@ -84,7 +82,6 @@ namespace ella {
             QString m_title;
             QByteArray m_artistId;
             QString m_artistName;
-            QMap<int, Util::Mood> m_moods;
             int m_bpm;
             int m_year;
             QStringList m_genres;

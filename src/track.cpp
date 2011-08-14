@@ -69,6 +69,11 @@ QString Track::album() const
   return QString();
 }
 
+QStringList Track::tags() const
+{
+    return m_ellaTrack.genres();
+}
+
 sp_image *Track::albumImage(SpotifySession *session) const
 {
     if(isValid()) {

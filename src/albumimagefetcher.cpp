@@ -46,3 +46,31 @@ void SP_CALLCONV AlbumImageFetcher::imageLoaded(sp_image *image, void *userdata)
     QImage i = aif->readImage();
     emit aif->finished(i);
 }
+
+
+
+ArtistBiographyFetcher::ArtistBiographyFetcher(sp_session *session, sp_artist *artist)
+{
+    m_session = session;
+    m_artist = artist;
+}
+
+ArtistBiographyFetcher::~ArtistBiographyFetcher()
+{
+}
+
+void ArtistBiographyFetcher::fetch()
+{
+    sp_artistbrowse_create(m_session, m_artist, ArtistBiographyFetcher::artistBrowserLoaded, this);
+}
+
+void SP_CALLCONV ArtistBiographyFetcher::artistBrowserLoaded(sp_artistbrowse *browse, void *userdata)
+{
+    ArtistBiographyFetcher *abf = static_cast<ArtistBiographyFetcher *>(userdata);
+    QString bio = sp_artistbrowse_biography(browse);
+    //Get first paragraph
+    int pos = bio.indexOf("\n");
+    if (pos > 0)
+        bio = bio.left(pos);
+    emit abf->finished(bio);
+}

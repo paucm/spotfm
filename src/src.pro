@@ -17,13 +17,11 @@ SOURCES += radio.cpp \
            logindialog.cpp \
            albumimagefetcher.cpp \
            aboutdialog.cpp \
-           suggest.cpp \
-           searchbox.cpp \
+           metadatawidget.cpp \
+           stationwidget.cpp \
            playlistresolver.cpp \
-           playlistcontrol.cpp \
-           playlistwidget.cpp \
-           playlistcontrolwrapper.cpp \
-           spotfmapp.cpp  
+           suggest.cpp \
+           spotfmapp.cpp   
 
 HEADERS += spotifysession.h \
            appkey.h \
@@ -37,16 +35,19 @@ HEADERS += spotifysession.h \
            logindialog.h \
            albumimagefetcher.h \
            aboutdialog.h \
+           metadatawidget.h \
+           stationwidget.h \
+           playlistresolver.h \
+           spinnerlabel.h \
            suggest.h \
            searchbox.h \
-           playlistresolver.h \
-           playlistwidget.h \
-           playlistcontrol.h \
-           playlistcontrolwrapper.h \
-           spotfmapp.h
+           spotfmapp.h \
+    aboutdlg.h
 
 FORMS += mainwindow.ui \
-         logindialog.ui 
+         logindialog.ui \
+         metadatawidget.ui \
+         stationwidget.ui
 
 RESOURCES += spotfm.qrc 
 

@@ -22,7 +22,7 @@ namespace ella {
 
         QNetworkReply *get(const QString &path, QMap<QString, QString> params);
         QByteArray parse(QNetworkReply *reply);
-    }
+    };
 }
 
 #define ELLA_WS_HOSTNAME "ella.bmat.ws"

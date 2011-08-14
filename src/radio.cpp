@@ -29,7 +29,7 @@ Radio::Radio()
     connect(m_playlistResolver, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
     //connect(m_playlistResolver, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     connect(SpotifySession::self(), SIGNAL(playTokenLost()), this, SLOT(onPlayTokenLost()));
-  
+
     initSound();
     m_soundFeeder = new SoundFeeder(this);
     connect(m_soundFeeder, SIGNAL(pcmWritten(Chunk)), this, SLOT(onPcmWritten(Chunk)));
@@ -58,7 +58,7 @@ void Radio::initSound()
 #else
 	m_snd = new AlsaAudio();
 #endif
-	m_snd->init();    
+	m_snd->init();
 }
 
 void Radio::onTrackAvailable()
@@ -83,8 +83,8 @@ void Radio::play()
         sp_session_player_play(SpotifySession::self()->session(), true);
         m_playCondition.wakeAll();
         setState(Playing);
-        qDebug("Playing %s - %s", 
-                m_currentTrack.artist().toLocal8Bit().constData(), 
+        qDebug("Playing %s - %s",
+                m_currentTrack.artist().toLocal8Bit().constData(),
                 m_currentTrack.title().toLocal8Bit().constData());
         emit playing(m_currentTrack);
     }
@@ -94,7 +94,7 @@ void Radio::play()
     }
 }
 
-void Radio::newChunk(const Chunk &chunk) 
+void Radio::newChunk(const Chunk &chunk)
 {
     m_data.enqueue(chunk);
 }

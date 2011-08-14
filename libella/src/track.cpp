@@ -7,14 +7,7 @@
 using namespace ella;
 
 static QString fetch_metadata = "track,artist,bmat_artist_id,"
-                                "highlevel_moods_happy_probability_value,"
-                                "highlevel_moods_acoustic_probability_value,"
-                                "highlevel_moods_aggressive_probability_value,"
-                                "highlevel_moods_relaxed_probability_value,"
-                                "highlevel_moods_party_probability_value,"
-                                "highlevel_moods_sad_probability_value,"
-                                "rhythm_bpm_value,year,genre,track_genre,"
-                                "mood";
+                                "rhythm_bpm_value,year,genre,track_genre";
 
 
 Track::Track()
@@ -142,46 +135,8 @@ void Track::parseMetadata(XmlQuery xml, Track &track)
     track.m_artistName = xml["artist"].text();
     track.m_artistId = xml["bmat_artist_id"].text().toLocal8Bit();
 
-    QStringList moodList;
-    Q_FOREACH(XmlQuery q, xml.children("mood")) {
-        moodList << q.text();
-    }
-
-    QMap<int, Util::Mood> moods;
-    QString value = xml["highlevel_moods_happy_probability_value"].text();
-    float v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("happy")) v = 1 - v;
-    moods.insertMulti(v, Util::Happy);
-
-    value = xml["highlevel_moods_acoustic_probability_value"].text();
-    v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("acoustic")) v = 1 - v;
-    moods.insertMulti(v, Util::Acoustic);
-
-    value = xml["highlevel_moods_aggressive_probability_value"].text();
-    v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("furious")) v = 1 - v;
-    moods.insertMulti(v, Util::Furious);
-
-    value = xml["highlevel_moods_relaxed_probability_value"].text();
-    v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("relaxed")) v = 1 - v;
-    moods.insertMulti(v, Util::Relax);
-
-    value = xml["highlevel_moods_party_probability_value"].text();
-    v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("party")) v = 1 - v;
-    moods.insertMulti(v, Util::Party);
-
-    value = xml["highlevel_moods_sad_probability_value"].text();
-    v = value.remove(0, 1).toFloat() * 100;
-    if (!moodList.contains("blue")) v = 1 - v;
-    moods.insertMulti(v, Util::Blue);
-
-    track.m_moods = moods;
-
-    value = xml["rhythm_bpm_value"].text();
-    v = value.remove(0, 1).toFloat();
+    QString value = xml["rhythm_bpm_value"].text();
+    float v = value.remove(0, 1).toFloat();
     track.m_bpm = v;
 
     value = xml["year"].text();
@@ -189,16 +144,17 @@ void Track::parseMetadata(XmlQuery xml, Track &track)
         track.m_year = value.toInt();
 
     Q_FOREACH(XmlQuery q, xml.children("genre")) {
-        if (!track.m_genres.contains(q.text())) {
+        if (!q.text().isEmpty() && !track.m_genres.contains(q.text())) {
             track.m_genres << q.text();
         }
     }
 
     Q_FOREACH(XmlQuery q, xml.children("track_genre")) {
-        if (!track.m_genres.contains(q.text())) {
+        if (!q.text().isEmpty() && !track.m_genres.contains(q.text())) {
             track.m_genres << q.text();
         }
     }
+
 }
 
 QString Track::searchParamsToQuery(const SearchParams &params)

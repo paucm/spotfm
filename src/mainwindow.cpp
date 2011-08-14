@@ -11,9 +11,8 @@
 #include "spotifysession.h"
 #include "radio.h"
 #include "track.h"
-#include "albumimagefetcher.h"
 #include "aboutdialog.h"
-#include "playlistwidget.h"
+#include "metadatawidget.h"
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
@@ -31,7 +30,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
-    
+
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
 
@@ -44,12 +43,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
     connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
 
-    connect(playlistWidget, SIGNAL(newPlaylist()), this, SLOT(onNewPlaylist()));
-    connect(startButton, SIGNAL(clicked()), this, SLOT(onPlay()));
-
     defaultWindow();
     setupTrayIcon();
-    helloLabel->setText(QString("Hello %1,").arg(SpotifySession::self()->username()));
+
+    stationWidget->setFocus();
 }
 
 MainWindow::~MainWindow()
@@ -60,18 +57,16 @@ MainWindow::~MainWindow()
 void MainWindow::defaultWindow()
 {
     setWindowTitle("SpotFm");
-    trackLabel->setText(QString());
-    artistLabel->setText(QString());
-    albumLabel->setText(QString());
-    imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.gif")));
-    //frame->setEnabled(false);
-    toogleButtons(false);
+    actionPlay->setEnabled(false);
+    actionPause->setEnabled(false);
     actionStop->setEnabled(false);
     actionSkip->setEnabled(false);
     timeLabel->setText(QString(tr("--:--")));
     totalTimeLabel->setText(QString(tr("--:--")));
     slider->setValue(0);
     tabWidget->setCurrentIndex(TAB_STATION);
+    metadataWidget->clear();
+    stationWidget->done();
 }
 
 void MainWindow::setupTrayIcon()
@@ -132,46 +127,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
-void MainWindow::onPlay()
-{
-    if (!SpotifySession::self()->isLoggedIn()) {
-        QMessageBox::critical(this, tr("No logged in"), tr("First, you must be logged in in Spotify"));
-        return;
-    }
-
-    if (m_radio->state() == Radio::Stopped) {
-        createStation();
-    }
-
-    else if (m_radio->state() == Radio::Paused) {
-        toogleButtons(true);
-        m_radio->unpause();
-   }
-}
 
 void MainWindow::onPlaying(const Track &track)
 {
-    toogleButtons(true);
+    tooglePlayPauseButtons(true);
     actionStop->setEnabled(true);
-    //frame->setEnabled(true);
     tabWidget->setCurrentIndex(TAB_PLAYING);
-    
-    /*Ui_MainWindow::statusBar->showMessage(
-        QString(tr("%1 radio").arg(m_radio->station()->name())));*/
-    
-    QString title = track.title();
-    QString artist = track.artist();
-   
-    QString msg = QString(tr("%1 - %2").arg(artist).arg(title));
+    stationWidget->done();
+
+    QString msg = QString(tr("%1 - %2").arg(track.artist()).arg(track.title()));
     setWindowTitle(msg);
     m_trayIcon->setToolTip(msg);
 
-    trackLabel->setText(title);
-    trackLabel->adjustSize();
-    artistLabel->setText(QString("by %1").arg(artist));
-    artistLabel->adjustSize();
-    albumLabel->setText(track.album());
-    albumLabel->adjustSize();
     int duration = track.duration();
     QString total = QString("%1:%2")
         .arg((duration / 1000) / 60, 2, 10, QLatin1Char('0'))
@@ -181,50 +148,7 @@ void MainWindow::onPlaying(const Track &track)
     slider->setMinimum(0);
     slider->setMaximum(duration);
     slider->setValue(0);
-	
-    AlbumImageFetcher *aif = new AlbumImageFetcher(
-        track.albumImage(SpotifySession::self()));
-    connect(aif, SIGNAL(finished(QImage)), this, SLOT(onArtistImage(QImage)));
-    aif->fetch();
-
-    addMoods(track);
-}
-
-void MainWindow::addMoods(const Track &track)
-{
-    QMap<int, ella::Util::Mood> moods = track.ellaTrack().moods();
-    QMapIterator<int, ella::Util::Mood> iter(moods);
-    while(iter.hasNext()) {
-        iter.next();
-        switch(iter.value()) {
-            case ella::Util::Blue:
-                blueBar->setValue(iter.key());
-                break;
-            case ella::Util::Happy:
-                happyBar->setValue(iter.key());
-                break;
-            case ella::Util::Furious:
-                furiousBar->setValue(iter.key());
-                break;
-            case ella::Util::Acoustic:
-                acousticBar->setValue(iter.key());
-                break;
-            case ella::Util::Party:
-                partyBar->setValue(iter.key());
-                break;
-            case ella::Util::Relax:
-                relaxBar->setValue(iter.key());
-                break;
-        }
-    }
-}
-
-void MainWindow::onArtistImage(QImage image)
-{
-    if (m_radio->state() != Radio::Stopped) {
-        imageLabel->setPixmap(QPixmap::fromImage(image));    
-    }
-    sender()->deleteLater();
+    metadataWidget->setMetadata(track);
 }
 
 void MainWindow::onTrackProgress(int pos)
@@ -239,14 +163,26 @@ void MainWindow::onTrackProgress(int pos)
 
 void MainWindow::onStop()
 {
-    m_radio->stop();
-    defaultWindow();
+    if (m_radio->state() != Radio::Stopped) {
+        m_radio->stop();
+        defaultWindow();
+    }
+}
+
+void MainWindow::onPlay()
+{
+    if (m_radio->state() == Radio::Paused) {
+        tooglePlayPauseButtons(true);
+        m_radio->unpause();
+   }
 }
 
 void MainWindow::onPause()
 {
-    toogleButtons(false);
-    m_radio->pause();
+    if (m_radio->state() == Radio::Playing) {
+        tooglePlayPauseButtons(false);
+        m_radio->pause();
+    }
 }
 
 void MainWindow::onSkip()
@@ -261,20 +197,7 @@ void MainWindow::onRadioError(const QString &msg)
     QMessageBox::critical(this, tr("Error"), msg);
 }
 
-void MainWindow::createStation()
-{
-    startButton->setEnabled(false);
-    playlistWidget->generate();
-}
-
-void MainWindow::onNewPlaylist()
-{
-    startButton->setEnabled(true);
-    QList<ella::Track> tracks = playlistWidget->playlist();
-    m_radio->play(tracks);
-}
-
-void MainWindow::toogleButtons(bool enabled)
+void MainWindow::tooglePlayPauseButtons(bool enabled)
 {
     actionPlay->setEnabled(!enabled);
     actionPause->setEnabled(enabled);

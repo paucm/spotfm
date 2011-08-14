@@ -35,6 +35,7 @@ namespace ella {
             static QByteArray speedToString(Speed speed);
 
     };
-};
+}
 
 #endif //ELLA_H
+

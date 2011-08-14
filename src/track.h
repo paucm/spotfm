@@ -2,6 +2,8 @@
 #define TRACK_H
 
 #include <QString>
+#include <QStringList>
+
 #include <libspotify/api.h>
 
 #include <ella/track.h>
@@ -18,6 +20,7 @@ class Track {
         ~Track();
 
         sp_track *spotifyTrack() const { return m_spTrack; }
+        sp_artist *spotifyArtist() const { return sp_track_artist(m_spTrack, 0); }
         void setSpotifyTrack(sp_track *spTrack);
 
         ella::Track ellaTrack() const { return m_ellaTrack; }
@@ -28,6 +31,9 @@ class Track {
         sp_image *albumImage(SpotifySession *session) const;
         int duration() const;
         QString uri() const;
+        QString biography() const;
+        QStringList tags() const;
+
 
         bool isValid() const;
         bool isAvailable() const;

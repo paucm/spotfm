@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <stdint.h>
 #include "openal-audio.h"
 
 OpenalAudio::OpenalAudio()

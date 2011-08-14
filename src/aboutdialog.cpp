@@ -27,7 +27,6 @@ AboutDialog::AboutDialog(QWidget *parent)
     v->addWidget( lauthors = label( authors, Qt::WA_MacMiniSize ) );
     v->addSpacing( 10 );
     v->addWidget(new QLabel("This product uses SPOTIFY CORE but is not endorsed,\ncertified or otherwise approved in any way by Spotify.\nSpotify is the registered trade mark of the Spotify Group"));
-    v->addWidget(new QLabel(QString("<html><img src=\"%1\"></html>").arg(":/icons/icons/spotify-core-logo-128x128.png")));
     
 
     v->setSizeConstraint( QLayout::SetFixedSize );
