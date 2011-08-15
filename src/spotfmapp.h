@@ -3,6 +3,7 @@
 
 #include <QApplication>
 
+class MainWindow;
 class SpotFmException;
 
 class SpotFmApp : public QApplication
@@ -24,6 +25,7 @@ class SpotFmApp : public QApplication
         void onLoggedOut();
 
     private:
+        MainWindow *m_mainWindow;
         bool m_logoutAndQuit;
 };
 

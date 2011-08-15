@@ -15,10 +15,15 @@ class AlsaAudio : public Audio
         ~AlsaAudio() { snd_pcm_close(m_snd); }
 	
         void init();
-        void clear();
+
         void prepare();
         void play(Chunk &chunk);
+        float volume() { return 0; }
 		
+    public slots:
+        void setVolume(int) {}
+        void clear();
+
     private:
         snd_pcm_t *m_snd;
 };

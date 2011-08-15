@@ -30,6 +30,9 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onStop();
         void onPause();
         void onSkip();
+        void onVolumeUp();
+        void onVolumeDown();
+        void onMute();
 
         void onPlaying(const Track &track);
         void onTrackProgress(int pos);
@@ -47,6 +50,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 
         Radio *m_radio;
         QSystemTrayIcon *m_trayIcon;
+        int m_lastVolume;
 };
 
 #endif

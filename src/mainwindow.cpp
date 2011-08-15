@@ -4,6 +4,7 @@
 #include <QCloseEvent>
 #include <QMap>
 #include <QMapIterator>
+#include <QSettings>
 
 #include <ella/util.h>
 
@@ -20,7 +21,6 @@
 MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   : QMainWindow(widget, fl)
   , Ui::MainWindow()
-
 {
     setupUi(this);
 
@@ -30,6 +30,9 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
     connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
+    connect(actionVolumeUp, SIGNAL(triggered()), this, SLOT(onVolumeUp()));
+    connect(actionVolumeDown, SIGNAL(triggered()), this, SLOT(onVolumeDown()));
+    connect(actionMute, SIGNAL(triggered()), this, SLOT(onMute()));
 
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
@@ -42,16 +45,32 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
     connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
     connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
+    connect(volumeSlider, SIGNAL(valueChanged(int)), m_radio, SLOT(setVolume(int)));
 
     defaultWindow();
     setupTrayIcon();
 
     stationWidget->setFocus();
+
+    QSettings s(QSettings::IniFormat,
+                QSettings::UserScope,
+                QCoreApplication::organizationName(),
+                QCoreApplication::applicationName());
+    volumeSlider->setValue(s.value("volume", 80).toInt());
+    m_radio->setVolume(volumeSlider->value());
+    m_lastVolume = volumeSlider->value();
 }
 
 MainWindow::~MainWindow()
 {
-    if(m_radio) delete m_radio;
+    QSettings s(QSettings::IniFormat,
+                QSettings::UserScope,
+                QCoreApplication::organizationName(),
+                QCoreApplication::applicationName());
+    s.setValue("volume", volumeSlider->value());
+    if(m_radio) {
+        delete m_radio;
+    }
 }
 
 void MainWindow::defaultWindow()
@@ -189,6 +208,32 @@ void MainWindow::onSkip()
 {
     actionSkip->setEnabled(false);
     m_radio->skipTrack();
+}
+
+void MainWindow::onVolumeUp()
+{
+    int volume = volumeSlider->value() + 5;
+    if (volume > 100)
+        volume = 100;
+    volumeSlider->setValue(volume);
+}
+
+void MainWindow::onVolumeDown()
+{
+    int volume = volumeSlider->value() - 5;
+    if (volume < 0)
+        volume = 0;
+    volumeSlider->setValue(volume);
+}
+
+void MainWindow::onMute()
+{
+    if (volumeSlider->value() != 0) {
+        m_lastVolume = volumeSlider->value();
+        volumeSlider->setValue(0);
+    }
+    else
+        volumeSlider->setValue(m_lastVolume);
 }
 
 void MainWindow::onRadioError(const QString &msg)

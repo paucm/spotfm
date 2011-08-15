@@ -129,8 +129,6 @@ void Radio::clearSoundQueue()
 {
     m_dataMutex.lock();
     if(state() != Stopped) {
-        sp_session_player_play(SpotifySession::self()->session(), false);
-        sp_session_player_unload(SpotifySession::self()->session());
         m_pcmMutex.lock();
         m_snd->clear();
         m_pcmMutex.unlock();
@@ -151,11 +149,13 @@ void Radio::play(const QList<ella::Track> tracks)
 
 void Radio::stop()
 {
-    m_playlistResolver->stop();
-    sp_session_player_play(SpotifySession::self()->session(), false);
-    sp_session_player_unload(SpotifySession::self()->session());
-    clearSoundQueue();
-    setState(Stopped);
+    if (state() != Stopped) {
+        m_playlistResolver->stop();
+        //sp_session_player_play(SpotifySession::self()->session(), false);
+        sp_session_player_unload(SpotifySession::self()->session());
+        clearSoundQueue();
+        setState(Stopped);
+    }
 }
 
 void Radio::skipTrack()
@@ -169,4 +169,9 @@ void Radio::onPlayTokenLost()
 {
     stop();
     emit error(QString(tr("Music is being played with this account at other client")));
+}
+
+void Radio::setVolume(int volume)
+{
+    m_snd->setVolume(volume);
 }

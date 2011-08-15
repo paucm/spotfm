@@ -1,17 +1,19 @@
 <RCC>
-  <qresource prefix="icons">
-    <file>icons/progress.gif</file>
-    <file>icons/list-add.png</file>
-    <file>icons/list-remove.png</file>
-    <file>icons/spotfm.png</file>
-    <file>icons/spotify-core-logo-128x128.png</file>
-    <file>icons/album.png</file>
-    <file>icons/no_cover.png</file>
-    <file>icons/artist.png</file>
-    <file>icons/track.png</file>
-    <file>icons/stop.png</file>
-    <file>icons/pause.png</file>
-    <file>icons/play.png</file>
-    <file>icons/skip.png</file>
-  </qresource>
+    <qresource prefix="/icons">
+        <file>icons/progress.gif</file>
+        <file>icons/list-add.png</file>
+        <file>icons/list-remove.png</file>
+        <file>icons/spotfm.png</file>
+        <file>icons/spotify-core-logo-128x128.png</file>
+        <file>icons/album.png</file>
+        <file>icons/no_cover.png</file>
+        <file>icons/artist.png</file>
+        <file>icons/track.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/pause.png</file>
+        <file>icons/play.png</file>
+        <file>icons/skip.png</file>
+        <file>icons/speaker_high.png</file>
+        <file>icons/speaker_low.png</file>
+    </qresource>
 </RCC>

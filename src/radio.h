@@ -60,6 +60,9 @@ class Radio: public QObject {
 
     State state() const { return m_state; }
 
+  public slots:
+    void setVolume(int volume);
+
   signals:
     void playing(Track);
     void trackInQueue();

@@ -5,16 +5,14 @@
 
 int main(int argc, char **argv)
 {
-    QCoreApplication::setOrganizationName("pcapella");
+    QCoreApplication::setOrganizationName("SpotFm");
     QCoreApplication::setApplicationName("SpotFm");
     QCoreApplication::setApplicationVersion("0.1");
     try
     {
-        SpotFmApp app(argc, argv);
         ella::ws::Username = "";
         ella::ws::Password = "";
-        MainWindow *mw = new MainWindow();
-        mw->show();
+        SpotFmApp app(argc, argv);
         return app.exec();
     }
     catch(SpotFmApp::SpotFmException)

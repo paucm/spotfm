@@ -3,9 +3,11 @@
 #include "spotfmapp.h"
 #include "spotifysession.h"
 #include "logindialog.h"
+#include "mainwindow.h"
 
 SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
     : QApplication(argc, argv)
+    , m_mainWindow(0)
 {
     QSettings s(QSettings::IniFormat,
 				QSettings::UserScope,
@@ -32,6 +34,8 @@ SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
         s.setValue("Password", d.password());
     }
     connect(spSession, SIGNAL(loggedOut()), this, SLOT(onLoggedOut()));
+    m_mainWindow = new MainWindow();
+    m_mainWindow->show();
 }
 
 SpotFmApp::~SpotFmApp()
@@ -43,6 +47,7 @@ SpotFmApp::~SpotFmApp()
 				QCoreApplication::applicationName());
         s.remove("Password");
     }
+    delete m_mainWindow;
     delete SpotifySession::self();
     qDebug("Good Bye!");
 }

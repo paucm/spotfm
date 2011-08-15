@@ -14,10 +14,14 @@ class OpenalAudio : public Audio
         ~OpenalAudio();
 		
         void init();
-        void clear();
         void play(Chunk &chunk);
         void prepare();
-		
+        float volume() { return m_volume; }
+
+    public slots:
+        void setVolume(int volume);
+        void clear();
+
     private:
         ALCdevice *m_device;
         ALCcontext *m_context;	
@@ -25,6 +29,7 @@ class OpenalAudio : public Audio
         ALuint m_source;
 		
         int m_frame;
+        float m_volume;
 };
 
 #endif

@@ -7,6 +7,7 @@ OpenalAudio::OpenalAudio()
     m_device = NULL;
     m_context = NULL;
     m_frame = 0;
+    m_volume = 0.5;
 }
 
 OpenalAudio::~OpenalAudio()
@@ -29,7 +30,6 @@ void OpenalAudio::init()
     }
     m_context = alcCreateContext(m_device, NULL);
     alcMakeContextCurrent(m_context);
-    alListenerf(AL_GAIN, 1.0f);
     alDistanceModel(AL_NONE);
 }
 
@@ -81,4 +81,10 @@ void OpenalAudio::play(Chunk &chunk)
         usleep(10);
     } while (!val);
     m_frame++;
+}
+
+void OpenalAudio::setVolume(int volume)
+{
+    m_volume = (float)volume / 100.0;
+    alListenerf(AL_GAIN, m_volume);
 }
