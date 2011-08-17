@@ -48,6 +48,7 @@ void Radio::exit()
     stop();
     m_isExiting = true;
     m_pcmWaitCondition.wakeAll();
+    m_playCondition.wakeAll();
     m_soundFeeder->wait();
 }
 
