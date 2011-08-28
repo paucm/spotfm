@@ -30,6 +30,21 @@ static QUrl url()
     return url;
 }
 
+ella::ws::ParseError::ParseError(ella::ws::Error err)
+    : std::runtime_error("ella::ws::Error")
+    , e(err)
+{
+}
+
+ella::ws::ParseError::~ParseError() throw()
+{
+}
+
+ella::ws::Error ella::ws::ParseError::enumValue() const
+{
+    return e;
+}
+
 QNetworkReply *ella::ws::get(const QString &path, QMap<QString, QString> params)
 {
     QUrl url = ::url();
@@ -52,8 +67,8 @@ QByteArray ella::ws::parse(QNetworkReply *reply)
 {
     QByteArray array = reply->readAll();
     if(reply->error() != QNetworkReply::NoError) {
-        //TODO check errors
-        qDebug("error");
+        qDebug("ERROR: %s", array.constData());
+        throw ella::ws::ParseError(ella::ws::UnknownError);
     }
     reply->deleteLater();
     return array; 

@@ -1,8 +1,10 @@
 #include <QNetworkReply>
+#include <QMessageBox>
 #include <QDebug>
 
 #include <ella/track.h>
 #include <ella/util.h>
+#include <ella/ws.h>
 
 #include "stationwidget.h"
 #include "spotifysession.h"
@@ -48,16 +50,24 @@ void StationWidget::onClicked()
         return;
    playButton->setEnabled(false);
    progressLabel->show();
-   QNetworkReply *reply = ella::Track::getSimilar(artist, ella::Track::SearchParams(), ella::Util::Playlist);
+   QNetworkReply *reply = ella::Track::getSimilar(
+                   artist, ella::Track::SearchParams(),
+                   ella::Util::Playlist);
    connect(reply, SIGNAL(finished()), this, SLOT(onGotSimilar()));
 }
 
 
 void StationWidget::onGotSimilar()
 {
-    QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
-    QList<ella::Track> tracks = ella::Track::getSimilar(reply).values();
-    Radio::self()->play(tracks);
+    try {
+        QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
+        QList<ella::Track> tracks = ella::Track::getSimilar(reply).values();
+        Radio::self()->play(tracks);
+    }
+    catch(ella::ws::ParseError &e) {
+        done();
+        QMessageBox::critical(this, tr("Error"), tr("This item is not available for streaming"));
+    }
 }
 
 void StationWidget::done()
