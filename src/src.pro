@@ -21,7 +21,10 @@ SOURCES += radio.cpp \
            stationwidget.cpp \
            playlistresolver.cpp \
            suggest.cpp \
-           spotfmapp.cpp   
+           openal-audio.cpp \
+           spotfmapp.cpp \
+           lastfm/lastfmservice.cpp \
+           lastfm/lastfmhttp.cpp
 
 HEADERS += spotifysession.h \
            appkey.h \
@@ -41,8 +44,10 @@ HEADERS += spotifysession.h \
            spinnerlabel.h \
            suggest.h \
            searchbox.h \
+           openal-audio.h \
            spotfmapp.h \
-    aboutdlg.h
+           lastfm/lastfmservice.h \
+           lastfm/lastfmhttp.h
 
 FORMS += mainwindow.ui \
          logindialog.ui \
@@ -52,8 +57,6 @@ FORMS += mainwindow.ui \
 RESOURCES += spotfm.qrc 
 
 win32 {
-    SOURCES += openal-audio.cpp 
-    HEADERS += openal-audio.h
     INCLUDEPATH += ../../libspotify-0.0.7-win32/include \
                    ../../openal-soft-1.13-bin/include
     LIBS += ../../libspotify-0.0.7-win32/lib/libspotify.lib \
@@ -62,9 +65,7 @@ win32 {
 }
 
 unix {
-    SOURCES += alsa-audio.cpp
-    HEADERS += alsa-audio.h
     LIBS += -L/usr/local/lib \
             -lspotify \
-            -lasound 
+            -lopenal
 }

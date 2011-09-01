@@ -3,11 +3,6 @@ Dependencies
 
 * Qt 4.4 http://qt.nokia.com/
 * libspotify http://developer.spotify.com/en/libspotify/overview/
-
-GNU/Linux
-* libasound2
-
-Win32
 * OpenAL http://connect.creativelabs.com/openal/default.aspx 
 
 Compiling

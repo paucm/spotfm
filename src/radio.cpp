@@ -4,11 +4,7 @@
 #include "playlistresolver.h"
 #include "spotifysession.h"
 #include "soundfeeder.h"
-#ifdef Q_OS_WIN32
 #include "openal-audio.h"
-#else
-#include "alsa-audio.h"
-#endif
 
 #include <QCoreApplication>
 #include <QFile>
@@ -54,11 +50,7 @@ void Radio::exit()
 
 void Radio::initSound()
 {
-#ifdef Q_OS_WIN32
 	m_snd = new OpenalAudio();
-#else
-	m_snd = new AlsaAudio();
-#endif
 	m_snd->init();
 }
 

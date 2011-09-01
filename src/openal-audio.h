@@ -5,14 +5,14 @@
 #include <AL/al.h>
 #include <AL/alc.h>
 
-#define NUM_BUFFERS 3
+#define NUM_BUFFERS 5
 
 class OpenalAudio : public Audio
 {
     public:
         OpenalAudio();
         ~OpenalAudio();
-		
+
         void init();
         void play(Chunk &chunk);
         void prepare();
@@ -24,10 +24,10 @@ class OpenalAudio : public Audio
 
     private:
         ALCdevice *m_device;
-        ALCcontext *m_context;	
+        ALCcontext *m_context;
         ALuint m_buffer[NUM_BUFFERS];
         ALuint m_source;
-		
+
         int m_frame;
         float m_volume;
 };
