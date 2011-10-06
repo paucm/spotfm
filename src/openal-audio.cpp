@@ -80,6 +80,7 @@ void OpenalAudio::play(Chunk &chunk)
         alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &val);
         usleep(10);
     } while (!val);
+    usleep(500);
     m_frame++;
 }
 
