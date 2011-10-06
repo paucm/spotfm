@@ -32,8 +32,6 @@ class Track {
         int duration() const;
         QString uri() const;
         QString biography() const;
-        QStringList tags() const;
-
 
         bool isValid() const;
         bool isAvailable() const;
