@@ -3,10 +3,11 @@
 
 #include <QObject>
 #include <QImage>
+#include <QThread>
 
 #include <libspotify/api.h>
 
-class AlbumImageFetcher : public QObject
+class AlbumImageFetcher : public QThread
 {
     Q_OBJECT
 
@@ -14,7 +15,7 @@ class AlbumImageFetcher : public QObject
         AlbumImageFetcher(sp_image *image);
         ~AlbumImageFetcher();
 
-        void fetch();
+        void run();
 
     signals:
         void finished(QImage);
@@ -26,7 +27,7 @@ class AlbumImageFetcher : public QObject
 };
 
 
-class ArtistBiographyFetcher : public QObject
+class ArtistBiographyFetcher : public QThread
 {
     Q_OBJECT
 
@@ -34,17 +35,17 @@ class ArtistBiographyFetcher : public QObject
         ArtistBiographyFetcher(sp_session *session, sp_artist *artist);
         ~ArtistBiographyFetcher();
 
-        void fetch();
+        void run();
 
     signals:
         void finished(QString);
 
     private:
         static void SP_CALLCONV artistBrowserLoaded(sp_artistbrowse *browse, void *userdata);
+        static void SP_CALLCONV imageLoaded(sp_image *image, void *userdata);
+
         sp_artist *m_artist;
         sp_session *m_session;
 };
 
-
 #endif
-

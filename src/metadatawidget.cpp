@@ -2,7 +2,7 @@
 #include <QDebug>
 
 #include "metadatawidget.h"
-#include "albumimagefetcher.h"
+#include "metadatafetcher.h"
 #include "track.h"
 #include "spotifysession.h"
 
@@ -36,14 +36,14 @@ void MetadataWidget::setMetadata(const Track &track)
     AlbumImageFetcher *aif = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onAlbumImage(QImage)));
-    aif->fetch();
+    aif->start();
 
     bioArtistLabel->setText(track.artist());
     bioLabel->setText(QString(tr("loading...")));
     ArtistBiographyFetcher *abf = new ArtistBiographyFetcher(
             SpotifySession::self()->session(), track.spotifyArtist());
     connect(abf, SIGNAL(finished(QString)), this, SLOT(onArtistBio(QString)));
-    abf->fetch();
+    abf->start();
 }
 
 void MetadataWidget::onAlbumImage(QImage image)
@@ -54,13 +54,12 @@ void MetadataWidget::onAlbumImage(QImage image)
 
 void MetadataWidget::onArtistBio(QString bio)
 {
-    if (!bio.isEmpty()) { 
+    if (!bio.isEmpty()) {
         bio = bio.remove(QRegExp("<[^>]*>"));
         bioLabel->setText(bio);
     }
     else
         bioLabel->setText(tr("No artist description available :("));
-   
     sender()->deleteLater();
 }
 

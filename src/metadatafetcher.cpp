@@ -1,6 +1,7 @@
-#include "albumimagefetcher.h"
+#include "metadatafetcher.h"
 
 AlbumImageFetcher::AlbumImageFetcher(sp_image *image)
+    : QThread()
 {
     m_image = image;
     sp_image_add_ref(m_image);
@@ -11,7 +12,7 @@ AlbumImageFetcher::~AlbumImageFetcher()
     sp_image_release(m_image);
 }
 
-void AlbumImageFetcher::fetch()
+void AlbumImageFetcher::run()
 {
     if (sp_image_is_loaded(m_image)) {
         QImage i = readImage();
@@ -50,6 +51,7 @@ void SP_CALLCONV AlbumImageFetcher::imageLoaded(sp_image *image, void *userdata)
 
 
 ArtistBiographyFetcher::ArtistBiographyFetcher(sp_session *session, sp_artist *artist)
+    : QThread()
 {
     m_session = session;
     m_artist = artist;
@@ -59,7 +61,7 @@ ArtistBiographyFetcher::~ArtistBiographyFetcher()
 {
 }
 
-void ArtistBiographyFetcher::fetch()
+void ArtistBiographyFetcher::run()
 {
     sp_artistbrowse_create(m_session, m_artist, ArtistBiographyFetcher::artistBrowserLoaded, this);
 }
