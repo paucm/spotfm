@@ -13,8 +13,6 @@ static QString fetch_metadata = "track,artist,bmat_artist_id,"
 Track::Track()
 {
     m_id = "";
-    m_bpm = 0;
-    m_year = 0;
 }
 
 Track::Track(const QByteArray &id, const QString &title,
@@ -24,15 +22,11 @@ Track::Track(const QByteArray &id, const QString &title,
     m_title = title;
     m_artistId = artistId;
     m_artistName = artistName;
-    m_bpm = 0;
-    m_year = 0;
 }
 
 Track::Track(const QByteArray &id)
 {
     m_id = id;
-    m_bpm = 0;
-    m_year = 0;
 }
 
 QNetworkReply *Track::search(const SearchParams &params, int offset, int limit)
@@ -134,27 +128,6 @@ void Track::parseMetadata(XmlQuery xml, Track &track)
     track.m_title = xml["track"].text();
     track.m_artistName = xml["artist"].text();
     track.m_artistId = xml["bmat_artist_id"].text().toLocal8Bit();
-
-    QString value = xml["rhythm_bpm_value"].text();
-    float v = value.remove(0, 1).toFloat();
-    track.m_bpm = v;
-
-    value = xml["year"].text();
-    if (!value.isEmpty())
-        track.m_year = value.toInt();
-
-    Q_FOREACH(XmlQuery q, xml.children("genre")) {
-        if (!q.text().isEmpty() && !track.m_genres.contains(q.text())) {
-            track.m_genres << q.text();
-        }
-    }
-
-    Q_FOREACH(XmlQuery q, xml.children("track_genre")) {
-        if (!q.text().isEmpty() && !track.m_genres.contains(q.text())) {
-            track.m_genres << q.text();
-        }
-    }
-
 }
 
 QString Track::searchParamsToQuery(const SearchParams &params)

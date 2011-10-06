@@ -53,10 +53,6 @@ namespace ella {
             QByteArray artistId() const { return m_artistId; }
             QString artistName() const { return m_artistName; }
 
-            int bpm() const { return m_bpm; }
-            int year() const { return m_year; }
-            QStringList genres() const { return m_genres; }
-
             static QNetworkReply *search(
                     const SearchParams &params = SearchParams(),
                     int offset=0,
@@ -82,9 +78,6 @@ namespace ella {
             QString m_title;
             QByteArray m_artistId;
             QString m_artistName;
-            int m_bpm;
-            int m_year;
-            QStringList m_genres;
     };
 }
 
