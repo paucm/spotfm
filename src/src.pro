@@ -22,9 +22,7 @@ SOURCES += radio.cpp \
            playlistresolver.cpp \
            suggest.cpp \
            openal-audio.cpp \
-           spotfmapp.cpp \
-           lastfm/lastfmservice.cpp \
-           lastfm/lastfmhttp.cpp
+           spotfmapp.cpp 
 
 HEADERS += spotifysession.h \
            appkey.h \
@@ -46,8 +44,6 @@ HEADERS += spotifysession.h \
            searchbox.h \
            openal-audio.h \
            spotfmapp.h \
-           lastfm/lastfmservice.h \
-           lastfm/lastfmhttp.h
 
 FORMS += mainwindow.ui \
          logindialog.ui \
