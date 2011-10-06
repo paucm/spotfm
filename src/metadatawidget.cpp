@@ -23,7 +23,7 @@ void MetadataWidget::clear()
     artistLabel->clear();
     albumLabel->clear();
     bioLabel->clear();
-    tagsLabel->clear();
+    bioArtistLabel->clear();
     imageLabel->setPixmap(QPixmap::fromImage(QImage(":/icons/icons/no_cover.png")));
 }
 
@@ -33,20 +33,13 @@ void MetadataWidget::setMetadata(const Track &track)
     artistLabel->setText(QString(tr("by %1")).arg(track.artist()));
     albumLabel->setText(track.album());
 
-    QStringList tags = track.tags();
-    QString tagsMsg("");
-    /*for (int i = 0; i < tags.size() || i < 5; ++i) {
-        qDebug() << tags.at(i);
-    }*/
-    qDebug() << tags;
-    tagsLabel->setText(tagsMsg);
-
     AlbumImageFetcher *aif = new AlbumImageFetcher(
         track.albumImage(SpotifySession::self()));
     connect(aif, SIGNAL(finished(QImage)), this, SLOT(onAlbumImage(QImage)));
     aif->fetch();
 
-    bioLabel->setText("loading...");
+    bioArtistLabel->setText(track.artist());
+    bioLabel->setText(QString(tr("loading...")));
     ArtistBiographyFetcher *abf = new ArtistBiographyFetcher(
             SpotifySession::self()->session(), track.spotifyArtist());
     connect(abf, SIGNAL(finished(QString)), this, SLOT(onArtistBio(QString)));
