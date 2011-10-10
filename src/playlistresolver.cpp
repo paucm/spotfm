@@ -1,5 +1,6 @@
 #include <QTimer>
 #include <QRegExp>
+#include <QDebug>
 
 #include <ella/track.h>
 
@@ -8,6 +9,7 @@
 #include "spotifyquery.h"
 
 #define QUEUE_SIZE 1
+#define ARTIST_HISTORY_LIMIT 5
 
 
 PlaylistResolver::PlaylistResolver(QObject *parent)
@@ -52,9 +54,15 @@ void PlaylistResolver::fill()
         return;
     }
 
-    if (m_queue.size() < QUEUE_SIZE) {
+    while (m_queue.size() < QUEUE_SIZE) {
         Track track(m_tracks.back());
+        m_tracks.pop_back();
+        if (m_artistHistory.contains(track.artist())) {
+            qDebug() << "Ignored artist " << track.artist();
+            continue;
+        }
         m_sp_query->execute(track);
+        break;
     }
 }
 
@@ -63,6 +71,7 @@ void PlaylistResolver::stop()
     m_stop = true;
     if (m_timer->isActive())
         m_timer->stop();
+    m_artistHistory.clear();
     m_queue.clear();
     m_pending.clear();
 }
@@ -93,8 +102,10 @@ void PlaylistResolver::onQueryCompleted()
 {
     if (m_stop) return;
     Track t = m_sp_query->currentTrack();
+    m_artistHistory.append(t.artist());
+    if (m_artistHistory.size() >= ARTIST_HISTORY_LIMIT)
+        m_artistHistory.pop_front();
     m_pending.append(t);
-    m_tracks.pop_back();
     m_timer->start();
 }
 
@@ -105,7 +116,6 @@ void PlaylistResolver::onQueryError(const QString &msg)
             t.artist().toLocal8Bit().constData(),
             t.title().toLocal8Bit().constData(),
             msg.toLocal8Bit().constData());
-    m_tracks.pop_back();
     m_timer->start();
 }
 
@@ -115,6 +125,5 @@ void PlaylistResolver::onQueryNoResults()
     qDebug("onQueryNoResults: %s - %s",
             t.artist().toLocal8Bit().constData(),
             t.title().toLocal8Bit().constData());
-    m_tracks.pop_back();
     m_timer->start();
 }

@@ -44,6 +44,7 @@ class PlaylistResolver: public QObject
         QList<Track> m_queue;
         QList<Track> m_pending;
         QTimer *m_timer;
+        QStringList m_artistHistory;
 };
 
 #endif
