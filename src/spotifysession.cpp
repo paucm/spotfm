@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QDesktopServices>
 
+#include "spotfmapp.h"
 #include "spotifysession.h"
 #include "appkey.h"
 #include "radio.h"
@@ -65,7 +66,8 @@ int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_au
         return 0;
     }
     const int numFrames = qMin(num_frames, 8192);
-    QMutex &m = Radio::self()->dataMutex();
+    Radio *radio = SpotFm::app()->radio();
+    QMutex &m = radio->dataMutex();
     m.lock();
     Chunk c;
     c.m_data = malloc(numFrames * sizeof(int16_t) * format->channels);
@@ -74,9 +76,9 @@ int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_au
     c.m_dataFrames = numFrames;
     c.m_rate = format->sample_rate;
 	c.m_channels = format->channels;
-    Radio::self()->newChunk(c);
+    radio->newChunk(c);
     m.unlock();
-    Radio::self()->pcmWaitCondition().wakeAll();
+    radio->pcmWaitCondition().wakeAll();
     return numFrames;
 }
 
@@ -184,10 +186,11 @@ void SpotifySession::signalEndOfTrack()
     c.m_data = 0;
     c.m_dataFrames = -1;
     c.m_rate = -1;
-    QMutex &m = Radio::self()->dataMutex();
-    Radio::self()->newChunk(c);
+    Radio *radio = SpotFm::app()->radio();
+    QMutex &m = radio->dataMutex();
+    radio->newChunk(c);
     m.unlock();
-    Radio::self()->pcmWaitCondition().wakeAll();
+    radio->pcmWaitCondition().wakeAll();
     emit endOfTrack();
 }
 

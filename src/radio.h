@@ -31,8 +31,6 @@ class Radio: public QObject {
     Radio();
     ~Radio();
 
-    static Radio *self() { return s_self; }
-
     Audio *pcmHandle() const { return m_snd; }
     QMutex &pcmMutex() { return m_pcmMutex; }
     QMutex &dataMutex() { return m_dataMutex; }
@@ -91,7 +89,6 @@ class Radio: public QObject {
     QQueue<Chunk> m_data;
     SoundFeeder *m_soundFeeder;
 
-    static Radio *s_self;
     PlaylistResolver *m_playlistResolver;
 
     Track m_currentTrack;

@@ -8,6 +8,7 @@
 
 #include "stationwidget.h"
 #include "spotifysession.h"
+#include "spotfmapp.h"
 #include "radio.h"
 
 
@@ -62,7 +63,7 @@ void StationWidget::onGotSimilar()
     try {
         QNetworkReply *reply = static_cast<QNetworkReply *>(sender());
         QList<ella::Track> tracks = ella::Track::getSimilar(reply).values();
-        Radio::self()->play(tracks);
+        SpotFm::app()->radio()->play(tracks);
     }
     catch(ella::ws::ParseError &e) {
         done();

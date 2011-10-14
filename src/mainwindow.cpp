@@ -8,9 +8,10 @@
 
 #include <ella/util.h>
 
+#include "spotfmapp.h"
+#include "radio.h"
 #include "mainwindow.h"
 #include "spotifysession.h"
-#include "radio.h"
 #include "track.h"
 #include "aboutdialog.h"
 #include "metadatawidget.h"
@@ -40,37 +41,28 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     AboutDialog *about = new AboutDialog(this);
     connect(actionAbout, SIGNAL(triggered()), about, SLOT(show()));
 
-    m_radio = new Radio();
-    connect(m_radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
-    connect(m_radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
-    connect(m_radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
-    connect(m_radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
-    connect(volumeSlider, SIGNAL(valueChanged(int)), m_radio, SLOT(setVolume(int)));
+    Radio *radio = SpotFm::app()->radio();
+    connect(radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
+    connect(radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
+    connect(radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
+    connect(radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
+    connect(volumeSlider, SIGNAL(valueChanged(int)), radio, SLOT(setVolume(int)));
 
     defaultWindow();
     setupTrayIcon();
 
     stationWidget->setFocus();
 
-    QSettings s(QSettings::IniFormat,
-                QSettings::UserScope,
-                QCoreApplication::organizationName(),
-                QCoreApplication::applicationName());
-    volumeSlider->setValue(s.value("volume", 80).toInt());
-    m_radio->setVolume(volumeSlider->value());
+    QSettings *s = SpotFm::app()->settings();
+    volumeSlider->setValue(s->value("volume", 80).toInt());
+    radio->setVolume(volumeSlider->value());
     m_lastVolume = volumeSlider->value();
 }
 
 MainWindow::~MainWindow()
 {
-    QSettings s(QSettings::IniFormat,
-                QSettings::UserScope,
-                QCoreApplication::organizationName(),
-                QCoreApplication::applicationName());
-    s.setValue("volume", volumeSlider->value());
-    if(m_radio) {
-        delete m_radio;
-    }
+    QSettings *s = SpotFm::app()->settings();
+    s->setValue("volume", volumeSlider->value());
 }
 
 void MainWindow::defaultWindow()
@@ -182,32 +174,32 @@ void MainWindow::onTrackProgress(int pos)
 
 void MainWindow::onStop()
 {
-    if (m_radio->state() != Radio::Stopped) {
-        m_radio->stop();
+    if (SpotFm::app()->radio()->state() != Radio::Stopped) {
+        SpotFm::app()->radio()->stop();
         defaultWindow();
     }
 }
 
 void MainWindow::onPlay()
 {
-    if (m_radio->state() == Radio::Paused) {
+    if (SpotFm::app()->radio()->state() == Radio::Paused) {
         tooglePlayPauseButtons(true);
-        m_radio->unpause();
+        SpotFm::app()->radio()->unpause();
    }
 }
 
 void MainWindow::onPause()
 {
-    if (m_radio->state() == Radio::Playing) {
+    if (SpotFm::app()->radio()->state() == Radio::Playing) {
         tooglePlayPauseButtons(false);
-        m_radio->pause();
+        SpotFm::app()->radio()->pause();
     }
 }
 
 void MainWindow::onSkip()
 {
     actionSkip->setEnabled(false);
-    m_radio->skipTrack();
+    SpotFm::app()->radio()->skipTrack();
 }
 
 void MainWindow::onVolumeUp()

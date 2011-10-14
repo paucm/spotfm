@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include "soundfeeder.h"
+#include "spotfmapp.h"
 #include "radio.h"
 
 SoundFeeder::SoundFeeder(QObject *parent)
@@ -15,32 +16,33 @@ SoundFeeder::~SoundFeeder()
 void SoundFeeder::run()
 {
     Q_FOREVER {
-        QMutex &m = Radio::self()->dataMutex();
+        Radio *radio = SpotFm::app()->radio();
+        QMutex &m = radio->dataMutex();
         m.lock();
-        while (!Radio::self()->hasChunk() && !Radio::self()->isExiting()) {
-            Radio::self()->pcmWaitCondition().wait(&m);
+        while (!radio->hasChunk() && !radio->isExiting()) {
+            radio->pcmWaitCondition().wait(&m);
         }
 		
-        if (Radio::self()->isExiting()) {
+        if (radio->isExiting()) {
           m.unlock();
           break;
         }
 
-        Chunk c = Radio::self()->nextChunk();
+        Chunk c = radio->nextChunk();
         if (c.m_dataFrames == -1) {
             emit pcmWritten(c);
             continue;
         }
         m.unlock();
-        QMutex &m2 = Radio::self()->pcmMutex();
+        QMutex &m2 = radio->pcmMutex();
         m2.lock();
-        while (!Radio::self()->isPlaying() && !Radio::self()->isExiting()) {
-            Radio::self()->playCondition().wait(&m2);
+        while (!radio->isPlaying() && !radio->isExiting()) {
+            radio->playCondition().wait(&m2);
         }
-        Radio::self()->pcmHandle()->play(c);
+        radio->pcmHandle()->play(c);
         m2.unlock();
         free(c.m_data);
-        if (Radio::self()->isPlaying()) {
+        if (radio->isPlaying()) {
             emit pcmWritten(c);
         }
     }

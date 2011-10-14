@@ -7,7 +7,6 @@
 
 #include "ui_mainwindow.h"
 
-class Radio;
 class Track;
 class QCloseEvent;
 
@@ -48,7 +47,6 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void createStation();
         void tooglePlayPauseButtons(bool enabled);
 
-        Radio *m_radio;
         QSystemTrayIcon *m_trayIcon;
         int m_lastVolume;
 };

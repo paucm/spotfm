@@ -9,7 +9,6 @@
 #include <QCoreApplication>
 #include <QFile>
 
-Radio *Radio::s_self = 0;
 
 Radio::Radio()
  : m_currentTrack()
@@ -18,7 +17,6 @@ Radio::Radio()
  , m_state(Stopped)
 {
     qRegisterMetaType<Chunk>();
-    s_self = this;
 
     m_playlistResolver = new PlaylistResolver(this);
 
@@ -94,7 +92,13 @@ void Radio::newChunk(const Chunk &chunk)
 
 Chunk Radio::nextChunk()
 {
-    return m_data.dequeue();
+    if (!m_data.isEmpty())
+        return m_data.dequeue();
+    Chunk c;
+    c.m_data = 0;
+    c.m_dataFrames = -1;
+    c.m_rate = -1;
+    return c;
 }
 
 bool Radio::hasChunk() const
@@ -144,7 +148,6 @@ void Radio::stop()
 {
     if (state() != Stopped) {
         m_playlistResolver->stop();
-        //sp_session_player_play(SpotifySession::self()->session(), false);
         sp_session_player_unload(SpotifySession::self()->session());
         clearSoundQueue();
         setState(Stopped);

@@ -4,36 +4,42 @@
 #include "spotifysession.h"
 #include "logindialog.h"
 #include "mainwindow.h"
+#include "radio.h"
 
 SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
     : QApplication(argc, argv)
     , m_mainWindow(0)
 {
-    QSettings s(QSettings::IniFormat,
+    m_settings = new QSettings(
+                QSettings::IniFormat,
 				QSettings::UserScope,
 				QCoreApplication::organizationName(),
 				QCoreApplication::applicationName());
-    
+
 	//Initalizate the spotify session
     SpotifySession *spSession = new SpotifySession();
 
     m_logoutAndQuit = false;
-	
-    LoginDialog d(s.value("Username").toString()); 
-    if (!s.value("Username").toString().isEmpty() && !s.value("Password").toString().isEmpty()) {
-        d.setPassword(s.value("Password").toString());
+
+    LoginDialog d(m_settings->value("Username").toString());
+    if (!m_settings->value("Username").toString().isEmpty() && 
+            !m_settings->value("Password").toString().isEmpty()) {
+        d.setPassword(m_settings->value("Password").toString());
         d.authenticate();
     }
     if (d.exec() != QDialog::Accepted) {
         throw SpotFmException();
     }
-    if (d.save() && 
-        (s.value("Username").toString() != d.username() || 
-        s.value("Password").toString() != d.password())) {
-        s.setValue("Username", d.username());
-        s.setValue("Password", d.password());
+    if (d.save() &&
+        (m_settings->value("Username").toString() != d.username() ||
+        m_settings->value("Password").toString() != d.password())) {
+        m_settings->setValue("Username", d.username());
+        m_settings->setValue("Password", d.password());
     }
     connect(spSession, SIGNAL(loggedOut()), this, SLOT(onLoggedOut()));
+
+    m_radio = new Radio();
+
     m_mainWindow = new MainWindow();
     m_mainWindow->show();
 }
@@ -41,14 +47,12 @@ SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
 SpotFmApp::~SpotFmApp()
 {
     if (m_logoutAndQuit) {
-        QSettings s(QSettings::IniFormat,
-				QSettings::UserScope,
-				QCoreApplication::organizationName(),
-				QCoreApplication::applicationName());
-        s.remove("Password");
+        m_settings->remove("Password");
     }
+    delete m_radio;
     delete m_mainWindow;
     delete SpotifySession::self();
+    delete m_settings;
     qDebug("Good Bye!");
 }
 
