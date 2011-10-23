@@ -134,7 +134,11 @@ SpotifySession::~SpotifySession()
 
 void SpotifySession::login(const QString &username, const QString &password)
 {
+    #if SPOTIFY_API_VERSION < 9
     sp_session_login(m_session, username.toLatin1(), password.toLatin1());
+    #else
+    sp_session_login(m_session, username.toLatin1(), password.toLatin1(), false);
+    #endif
 }
 
 void SpotifySession::logout()
