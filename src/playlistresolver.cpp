@@ -49,12 +49,8 @@ void PlaylistResolver::fill()
 {
     if (m_stop) return;
 
-    if (m_tracks.isEmpty()) {
-        stop();
-        return;
-    }
-
     while (m_queue.size() < QUEUE_SIZE) {
+        if (m_tracks.isEmpty()) return;
         Track track(m_tracks.back());
         m_tracks.pop_back();
         if (m_artistHistory.contains(track.artist())) {
