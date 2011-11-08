@@ -56,10 +56,8 @@ class Radio: public QObject {
     AudioController *m_audioController;
     PlaylistResolver *m_playlistResolver;
 
-    Track m_currentTrack;
     int m_trackPos;
 
-    bool m_isExiting;
     int m_skipLeft;
 
     QString m_name;
@@ -67,3 +65,4 @@ class Radio: public QObject {
 };
 
 #endif
+
