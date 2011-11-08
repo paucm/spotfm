@@ -23,7 +23,7 @@ Radio::Radio(QObject *parent)
     connect(m_audioController, SIGNAL(trackStarted()), this, SLOT(onTrackStarted()));
     connect(m_audioController, SIGNAL(trackEnded(int)), this, SLOT(onTrackEnded(int)));
     connect(m_audioController, SIGNAL(trackProgress(int)), this, SIGNAL(trackProgress(int)));
-    /*connect(m_audioController, SIGNAL(error(int, QString)), this, SIGNAL(onAudioControllerError(QString)));*/
+    connect(m_audioController, SIGNAL(error(int, QString)), this, SLOT(onAudioControllerError(int, QString)));
 	m_audioController->init();
     m_audioController->start();
 
