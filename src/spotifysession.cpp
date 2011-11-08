@@ -3,10 +3,12 @@
 #include <QTimer>
 #include <QFile>
 #include <QDesktopServices>
+#include <QDebug>
 
 #include "spotfmapp.h"
 #include "spotifysession.h"
 #include "appkey.h"
+#include "chunk.h"
 #include "radio.h"
 
 SpotifySession *SpotifySession::s_self = 0;
@@ -42,7 +44,7 @@ void SP_CALLCONV SpotifySession::spLoggedOut(sp_session *session)
 
 void SP_CALLCONV SpotifySession::spConnectionError(sp_session *session, sp_error error)
 {
-    qDebug("connectionError: %s", sp_error_message(error));
+    qDebug() << "connectionError: " << sp_error_message(error);
     Q_UNUSED(session);
 }
 
@@ -66,9 +68,6 @@ int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_au
         return 0;
     }
     const int numFrames = qMin(num_frames, 8192);
-    Radio *radio = SpotFm::app()->radio();
-    QMutex &m = radio->dataMutex();
-    m.lock();
     Chunk c;
     c.m_data = malloc(numFrames * sizeof(int16_t) * format->channels);
 	memset(c.m_data, 0, numFrames * sizeof(int16_t) * format->channels);
@@ -76,9 +75,8 @@ int SP_CALLCONV SpotifySession::spMusicDelivery(sp_session *session, const sp_au
     c.m_dataFrames = numFrames;
     c.m_rate = format->sample_rate;
 	c.m_channels = format->channels;
-    radio->newChunk(c);
-    m.unlock();
-    radio->pcmWaitCondition().wakeAll();
+    Radio *radio = SpotFm::app()->radio();
+    radio->audioController()->newChunk(c);
     return numFrames;
 }
 
@@ -92,7 +90,6 @@ void SP_CALLCONV SpotifySession::spLogMessage(sp_session *session, const char *d
 {
     Q_UNUSED(session);
     Q_UNUSED(data);
-    
 }
         
 void SP_CALLCONV SpotifySession::spEndOfTrack(sp_session *session)
@@ -158,6 +155,27 @@ QString SpotifySession::username() const
     return username;
 }
 
+bool SpotifySession::load(const Track &track)
+{
+    if(!m_isLoggedIn) return false;
+
+    sp_error error = sp_session_player_load(m_session, track.spotifyTrack());
+    if (SP_ERROR_OK != error) {
+        qDebug() << "SpotifySession: Failed to load track: " << sp_error_message(error);
+        return false;
+    }
+    sp_session_player_play(m_session, true);
+    return true;
+}
+ 
+void SpotifySession::unload()
+{
+    if(!m_isLoggedIn) return;
+
+    sp_session_player_play(m_session, false);
+    sp_session_player_unload(m_session);
+}
+
 void SpotifySession::signalNotifyMainThread()
 {
     emit notifyMainThreadSignal();
@@ -176,12 +194,12 @@ void SpotifySession::signalLoggedIn()
 
 void SpotifySession::signalLoggedOut()
 {
-  emit loggedOut();
+    emit loggedOut();
 }
 
 void SpotifySession::signalMetadataUpdated()
 {
-  emit metadataUpdated();
+    emit metadataUpdated();
 }
 
 void SpotifySession::signalEndOfTrack()
@@ -191,10 +209,7 @@ void SpotifySession::signalEndOfTrack()
     c.m_dataFrames = -1;
     c.m_rate = -1;
     Radio *radio = SpotFm::app()->radio();
-    QMutex &m = radio->dataMutex();
-    radio->newChunk(c);
-    m.unlock();
-    radio->pcmWaitCondition().wakeAll();
+    radio->audioController()->newChunk(c);
     emit endOfTrack();
 }
 

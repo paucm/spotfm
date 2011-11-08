@@ -2,100 +2,68 @@
 #define RADIO_H
 
 #include <QObject>
-#include <QMutex>
-#include <QQueue>
-#include <QBuffer>
-#include <QWaitCondition>
 
-#include <libspotify/api.h>
-
-#include <ella/track.h>
-
-#include "audio.h"
+#include "audiocontroller.h"
 #include "chunk.h"
 #include "track.h"
+#include "util.h"
 
 class PlaylistResolver;
 class SpotifySession;
-class SoundFeeder;
+
 
 class Radio: public QObject {
   Q_OBJECT
-  public:
-    enum State {
-        Stopped = 0,
-        Playing,
-        Paused
-    };
 
-    Radio();
+  public:
+    typedef QList<ella::Track> Playlist;
+
+    Radio(QObject *parent=0);
     ~Radio();
 
-    Audio *pcmHandle() const { return m_snd; }
-    QMutex &pcmMutex() { return m_pcmMutex; }
-    QMutex &dataMutex() { return m_dataMutex; }
-    QWaitCondition &pcmWaitCondition() { return m_pcmWaitCondition; }
-    QWaitCondition &playCondition() { return m_playCondition; }
+    QString stationName() const { return m_name; }
+    void playStation(const QString &name);
 
-    void newChunk(const Chunk &chunk);
-    Chunk nextChunk();
-    bool hasChunk() const;
+    RadioState state() const { return m_state; }
 
-    void exit();
-    bool isExiting() const { return m_isExiting; }
-    bool isPlaying() const { return m_state == Playing; }
-
-    void play(const QList<ella::Track> tracks);
-    void stop();
-    void skipTrack();
-
-    void pause() { setState(Paused); }
-    void unpause()
-    {
-        setState(Playing);
-        m_playCondition.wakeAll();
-    }
-
-    State state() const { return m_state; }
+    AudioController *audioController() { return m_audioController; }
 
   public slots:
+    void stop();
+    void skipTrack();
     void setVolume(int volume);
+    void pause();
+    void unpause();
 
   signals:
-    void playing(Track);
-    void trackInQueue();
-    void error(QString message);
+    void trackStarted(const Track &track);
+    void trackEnded(const Track &track, int at);
+    void skipsLeft(int skips);
     void trackProgress(int pos);
 
-  private:
-    void play();
-    void setState(const State &state) { m_state = state; }
+    void error(int code, const QString &message);
 
   private slots:
-    void onPcmWritten(const Chunk &chunk);
+    void onGotPlaylist();
     void onTrackAvailable();
-    void onPlayTokenLost();
+    void onTrackStarted();
+    void onTrackEnded(int at);
+    void onAudioControllerError(int code, const QString &message);
 
   private:
-    void initSound();
-    void clearSoundQueue();
+    void setState(const RadioState &state) { m_state = state; }
 
-  private:
-    Audio *m_snd;
-    QMutex m_pcmMutex;
-    QMutex m_dataMutex;
-    QWaitCondition m_pcmWaitCondition;
-    QWaitCondition m_playCondition;
-    QQueue<Chunk> m_data;
-    SoundFeeder *m_soundFeeder;
-
+    AudioController *m_audioController;
     PlaylistResolver *m_playlistResolver;
 
     Track m_currentTrack;
     int m_trackPos;
 
     bool m_isExiting;
-    State m_state;
+    int m_skipLeft;
+
+    QString m_name;
+    RadioState m_state;
 };
 
 #endif

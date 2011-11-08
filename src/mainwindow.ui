@@ -166,9 +166,7 @@
     <property name="title">
      <string>&amp;Controls</string>
     </property>
-    <addaction name="actionPlay"/>
     <addaction name="actionStop"/>
-    <addaction name="actionPause"/>
     <addaction name="actionSkip"/>
     <addaction name="separator"/>
     <addaction name="actionVolumeUp"/>
@@ -200,8 +198,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionPlay"/>
-   <addaction name="actionStop"/>
    <addaction name="actionPause"/>
+   <addaction name="actionStop"/>
    <addaction name="actionSkip"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -225,7 +223,7 @@
     <string>Play</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+P</string>
+    <string>Space</string>
    </property>
   </action>
   <action name="actionPause">

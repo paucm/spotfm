@@ -1,8 +1,8 @@
-#include <unistd.h>
 #include <stdint.h>
 #include "openal-audio.h"
 
-OpenalAudio::OpenalAudio()
+OpenalAudio::OpenalAudio(QObject * parent)
+ : AudioController(parent)
 {
     m_device = NULL;
     m_context = NULL;
@@ -78,9 +78,8 @@ void OpenalAudio::play(Chunk &chunk)
 
     do {
         alGetSourcei(m_source, AL_BUFFERS_PROCESSED, &val);
-        usleep(10);
+        QThread::usleep(10);
     } while (!val);
-    usleep(500);
     m_frame++;
 }
 

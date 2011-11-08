@@ -25,18 +25,20 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
         void restoreWindow();
 
-        void onPlay();
+        void onNewStation();
+
         void onStop();
-        void onPause();
         void onSkip();
+        void onPause();
+        void onUnpause();
         void onVolumeUp();
         void onVolumeDown();
         void onMute();
+        void enableSkipButton(int skips);
 
-        void onPlaying(const Track &track);
+        void onTrackStarted(const Track &track);
         void onTrackProgress(int pos);
-        void onRadioError(const QString &msg);
-        void enableSkipButton();
+        void onRadioError(int code, const QString &msg);
 
     protected:
         void closeEvent(QCloseEvent *event);
@@ -52,3 +54,4 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
 };
 
 #endif
+

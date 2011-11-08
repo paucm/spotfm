@@ -41,4 +41,7 @@ class Track {
         sp_track *m_spTrack;
 };
 
+#include <QMetaType>
+Q_DECLARE_METATYPE(Track);
+
 #endif

@@ -11,9 +11,9 @@ SOURCES += radio.cpp \
            spotifysession.cpp \
            spotifyquery.cpp \
            main.cpp \
-           soundfeeder.cpp \
            track.cpp \
            mainwindow.cpp \
+           audiocontroller.cpp \
            logindialog.cpp \
            metadatafetcher.cpp \
            aboutdialog.cpp \
@@ -27,10 +27,9 @@ SOURCES += radio.cpp \
 HEADERS += spotifysession.h \
            appkey.h \
            radio.h \
-           soundfeeder.h \
            spotifyquery.h \
            chunk.h \
-		   audio.h \
+		   audiocontroller.h \
            track.h \
            mainwindow.h \
            logindialog.h \
@@ -43,6 +42,7 @@ HEADERS += spotifysession.h \
            suggest.h \
            searchbox.h \
            openal-audio.h \
+           util.h \
            spotfmapp.h \
 
 FORMS += mainwindow.ui \

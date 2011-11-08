@@ -15,13 +15,16 @@ class StationWidget : public QWidget, private Ui::StationWidget
         ~StationWidget();
 
         void setFocus();
+        QString name() const;
+
+    signals:
+        void clicked();
 
     public slots:
-        void done();
+        void startProgress();
+        void stopProgress();
 
     private slots:
-        void onClicked();
-        void onGotSimilar();
         void onTextChanged(const QString &text);
 };
 

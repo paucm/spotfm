@@ -2,7 +2,10 @@
 #define SPOTIFYSESSION_H
 
 #include <QObject>
+
 #include <libspotify/api.h>
+
+#include <track.h>
 
 class QFile;
 class AudioEngine;
@@ -22,6 +25,9 @@ class SpotifySession : public QObject
         sp_session *session() { return m_session; }
         QString username() const;
         bool isLoggedIn() const { return m_isLoggedIn; }
+
+        bool load(const Track &track);
+        void unload();
 
         static SpotifySession *self() { return s_self; }
 

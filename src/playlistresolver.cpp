@@ -27,7 +27,7 @@ PlaylistResolver::PlaylistResolver(QObject *parent)
 
     connect(SpotifySession::self(), SIGNAL(metadataUpdated()), this, SLOT(onMetadataUpdated()));
 
-    m_stop = false;
+    m_isRunning = false;
 }
 
 PlaylistResolver::~PlaylistResolver()
@@ -39,20 +39,22 @@ Track PlaylistResolver::takeNextTrack()
 {
     if (m_queue.isEmpty())
         return Track();
-
-    Track track = m_queue.takeFirst();
-    m_timer->start();
-    return track;
+    return m_queue.takeFirst();
 }
 
 void PlaylistResolver::fill()
 {
-    if (m_stop) return;
+    if (!m_isRunning) return;
 
-    while (m_queue.size() < QUEUE_SIZE) {
-        if (m_tracks.isEmpty()) return;
+    Q_FOREVER {
+        if (m_tracks.isEmpty()) {
+            m_isRunning = false;
+            emit done();
+            break;
+        }
         Track track(m_tracks.back());
         m_tracks.pop_back();
+
         if (m_artistHistory.contains(track.artist())) {
             qDebug() << "Ignored artist " << track.artist();
             continue;
@@ -62,9 +64,18 @@ void PlaylistResolver::fill()
     }
 }
 
+void PlaylistResolver::start()
+{
+    if (m_isRunning) return;
+    m_isRunning = true;
+    fill();
+}
+
+
 void PlaylistResolver::stop()
 {
-    m_stop = true;
+    if (!m_isRunning) return;
+    m_isRunning = false;
     if (m_timer->isActive())
         m_timer->stop();
     m_artistHistory.clear();
@@ -74,7 +85,7 @@ void PlaylistResolver::stop()
 
 void PlaylistResolver::onMetadataUpdated()
 {
-    if(m_pending.isEmpty()) return;
+    if (m_pending.isEmpty()) return;
 
     for (int i = 0; i < m_pending.size(); ++i) {
         Track t = m_pending.at(i);
@@ -88,15 +99,12 @@ void PlaylistResolver::onMetadataUpdated()
 
 void PlaylistResolver::setPlaylist(const QList<ella::Track> &tracks)
 {
-    if(!m_stop)
-        stop();
     m_tracks = tracks;
-    fill();
 }
 
 void PlaylistResolver::onQueryCompleted()
 {
-    if (m_stop) return;
+    if (!m_isRunning) return;
     Track t = m_sp_query->currentTrack();
     m_artistHistory.append(t.artist());
     if (m_artistHistory.size() >= ARTIST_HISTORY_LIMIT)
@@ -107,19 +115,15 @@ void PlaylistResolver::onQueryCompleted()
 
 void PlaylistResolver::onQueryError(const QString &msg)
 {
+    Q_UNUSED(msg);
+    if (!m_isRunning) return;
     Track t = m_sp_query->currentTrack();
-    qDebug("onQueryError: (%s - %s) : %s",
-            t.artist().toLocal8Bit().constData(),
-            t.title().toLocal8Bit().constData(),
-            msg.toLocal8Bit().constData());
     m_timer->start();
 }
 
 void PlaylistResolver::onQueryNoResults()
 {
+    if (!m_isRunning) return;
     Track t = m_sp_query->currentTrack();
-    qDebug("onQueryNoResults: %s - %s",
-            t.artist().toLocal8Bit().constData(),
-            t.title().toLocal8Bit().constData());
     m_timer->start();
 }

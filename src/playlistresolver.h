@@ -21,12 +21,14 @@ class PlaylistResolver: public QObject
 
         virtual Track takeNextTrack();
         virtual void stop();
-        virtual void start() { m_stop = false; fill(); }
+        virtual void start();
+        bool isRunning() const { return m_isRunning; }
 
         void setPlaylist(const QList<ella::Track> &tracks);
 
     signals:
         void trackAvailable();
+        void done();
 
     protected slots:
         void onQueryCompleted();
@@ -37,7 +39,7 @@ class PlaylistResolver: public QObject
         void onMetadataUpdated();
 
     private:
-        bool m_stop;
+        bool m_isRunning;
         SpotifyQuery *m_sp_query;
 
         QList<ella::Track> m_tracks;

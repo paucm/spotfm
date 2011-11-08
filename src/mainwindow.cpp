@@ -15,9 +15,11 @@
 #include "track.h"
 #include "aboutdialog.h"
 #include "metadatawidget.h"
+#include "util.h"
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
+
 
 MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
   : QMainWindow(widget, fl)
@@ -27,13 +29,16 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     Ui_MainWindow::mainToolBar->setIconSize(QSize(35, 35));
 
-    connect(actionPlay, SIGNAL(triggered()), this, SLOT(onPlay()));
-    connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
-    connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
-    connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
     connect(actionVolumeUp, SIGNAL(triggered()), this, SLOT(onVolumeUp()));
     connect(actionVolumeDown, SIGNAL(triggered()), this, SLOT(onVolumeDown()));
     connect(actionMute, SIGNAL(triggered()), this, SLOT(onMute()));
+    connect(actionSkip, SIGNAL(triggered()), this, SLOT(onSkip()));
+    connect(actionStop, SIGNAL(triggered()), this, SLOT(onStop()));
+    connect(actionPlay, SIGNAL(triggered()), this, SLOT(onUnpause()));
+    connect(actionPause, SIGNAL(triggered()), this, SLOT(onPause()));
+
+    actionPlay->setVisible(false);
+
 
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
@@ -42,15 +47,16 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     connect(actionAbout, SIGNAL(triggered()), about, SLOT(show()));
 
     Radio *radio = SpotFm::app()->radio();
-    connect(radio, SIGNAL(playing(Track)), this, SLOT(onPlaying(Track)));
-    connect(radio, SIGNAL(error(QString)), this, SLOT(onRadioError(QString)));
-    connect(radio, SIGNAL(trackInQueue()), this, SLOT(enableSkipButton()));
+    connect(radio, SIGNAL(trackStarted(Track)), this, SLOT(onTrackStarted(Track)));
+    connect(radio, SIGNAL(skipsLeft(int)), this, SLOT(enableSkipButton(int)));
     connect(radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
+    connect(radio, SIGNAL(error(int, QString)), this, SLOT(onRadioError(int, QString)));
     connect(volumeSlider, SIGNAL(valueChanged(int)), radio, SLOT(setVolume(int)));
 
     defaultWindow();
     setupTrayIcon();
 
+    connect(stationWidget, SIGNAL(clicked()), this, SLOT(onNewStation()));
     stationWidget->setFocus();
 
     QSettings *s = SpotFm::app()->settings();
@@ -68,16 +74,15 @@ MainWindow::~MainWindow()
 void MainWindow::defaultWindow()
 {
     setWindowTitle("SpotFm");
-    actionPlay->setEnabled(false);
-    actionPause->setEnabled(false);
     actionStop->setEnabled(false);
     actionSkip->setEnabled(false);
+    actionPlay->setEnabled(false);
+    actionPause->setEnabled(false);
     timeLabel->setText(QString(tr("--:--")));
     totalTimeLabel->setText(QString(tr("--:--")));
     slider->setValue(0);
     tabWidget->setCurrentIndex(TAB_STATION);
     metadataWidget->clear();
-    stationWidget->done();
 }
 
 void MainWindow::setupTrayIcon()
@@ -138,13 +143,23 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
-
-void MainWindow::onPlaying(const Track &track)
+void MainWindow::onNewStation()
 {
-    tooglePlayPauseButtons(true);
+    stationWidget->startProgress();
+    Radio *radio = SpotFm::app()->radio();
+    if (radio->state() != Stopped)
+        radio->stop();
+    radio->playStation(stationWidget->name());
+}
+
+void MainWindow::onTrackStarted(const Track &track)
+{
     actionStop->setEnabled(true);
+    actionSkip->setEnabled(true);
+    actionPause->setEnabled(true);
+    actionPlay->setEnabled(true);
     tabWidget->setCurrentIndex(TAB_PLAYING);
-    stationWidget->done();
+    stationWidget->stopProgress();
 
     QString msg = QString(tr("%1 - %2").arg(track.artist()).arg(track.title()));
     setWindowTitle(msg);
@@ -157,7 +172,7 @@ void MainWindow::onPlaying(const Track &track)
     totalTimeLabel->setText(total);
     timeLabel->setText(QString(tr("00:00")));
     slider->setMinimum(0);
-    slider->setMaximum(duration);
+    slider->setMaximum(duration/1000);
     slider->setValue(0);
     metadataWidget->setMetadata(track);
 }
@@ -165,41 +180,38 @@ void MainWindow::onPlaying(const Track &track)
 void MainWindow::onTrackProgress(int pos)
 {
     slider->setValue(pos);
-
     QString progress = QString("%1:%2")
-        .arg((slider->value() / 1000) / 60, 2, 10, QLatin1Char('0'))
-        .arg((slider->value() / 1000) % 60, 2, 10, QLatin1Char('0'));
+        .arg(slider->value() / 60, 2, 10, QLatin1Char('0'))
+        .arg(slider->value() % 60, 2, 10, QLatin1Char('0'));
     timeLabel->setText(progress);
 }
 
 void MainWindow::onStop()
 {
-    if (SpotFm::app()->radio()->state() != Radio::Stopped) {
-        SpotFm::app()->radio()->stop();
-        defaultWindow();
-    }
-}
-
-void MainWindow::onPlay()
-{
-    if (SpotFm::app()->radio()->state() == Radio::Paused) {
-        tooglePlayPauseButtons(true);
-        SpotFm::app()->radio()->unpause();
-   }
-}
-
-void MainWindow::onPause()
-{
-    if (SpotFm::app()->radio()->state() == Radio::Playing) {
-        tooglePlayPauseButtons(false);
-        SpotFm::app()->radio()->pause();
-    }
+    SpotFm::app()->radio()->stop();
+    defaultWindow();
 }
 
 void MainWindow::onSkip()
 {
-    actionSkip->setEnabled(false);
     SpotFm::app()->radio()->skipTrack();
+}
+
+void MainWindow::onPause()
+{
+    actionPlay->setVisible(true);
+    actionPlay->setEnabled(true);
+    actionPause->setVisible(false);
+    SpotFm::app()->radio()->pause();
+}
+
+void MainWindow::onUnpause()
+{
+    actionPlay->setVisible(false);
+    actionPlay->setEnabled(false);
+    actionPause->setVisible(true);
+    actionPause->setEnabled(true);
+    SpotFm::app()->radio()->unpause();
 }
 
 void MainWindow::onVolumeUp()
@@ -228,20 +240,19 @@ void MainWindow::onMute()
         volumeSlider->setValue(m_lastVolume);
 }
 
-void MainWindow::onRadioError(const QString &msg)
+void MainWindow::onRadioError(int code, const QString &msg)
 {
-    defaultWindow();
+    switch(code) {
+        case InvalidStation:
+            stationWidget->stopProgress();
+            break;
+        default:
+            defaultWindow();
+    };
     QMessageBox::critical(this, tr("Error"), msg);
 }
 
-void MainWindow::tooglePlayPauseButtons(bool enabled)
+void MainWindow::enableSkipButton(int skips)
 {
-    actionPlay->setEnabled(!enabled);
-    actionPause->setEnabled(enabled);
-}
-
-void MainWindow::enableSkipButton()
-{
-    if (!actionSkip->isEnabled())
-        actionSkip->setEnabled(true);
+    actionSkip->setEnabled(skips > 0);
 }

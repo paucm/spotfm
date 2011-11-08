@@ -1,16 +1,16 @@
 #ifndef OPENAL_AUDIO_H
 #define OPENAL_AUDIO_H
 
-#include "audio.h"
+#include "audiocontroller.h"
 #include <AL/al.h>
 #include <AL/alc.h>
 
 #define NUM_BUFFERS 5
 
-class OpenalAudio : public Audio
+class OpenalAudio : public AudioController
 {
     public:
-        OpenalAudio();
+        OpenalAudio(QObject *parent);
         ~OpenalAudio();
 
         void init();
