@@ -4,3 +4,4 @@ qrc_*.cpp
 ui_*.h
 build/
 Makefile
+.*
