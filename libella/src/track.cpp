@@ -6,8 +6,7 @@
 
 using namespace ella;
 
-static QString fetch_metadata = "track,artist,bmat_artist_id,"
-                                "rhythm_bpm_value,year,genre,track_genre";
+static QString fetch_metadata = "track,artist,bmat_artist_id";
 
 
 Track::Track()
