@@ -21,7 +21,10 @@ class Radio: public QObject {
     Radio(QObject *parent=0);
     ~Radio();
 
-    QString stationName() const { return m_name; }
+    QString stationName() const
+    {
+        return QString(tr("similar to %1")).arg(m_name);
+    }
     void playStation(const QString &name);
 
     RadioState state() const { return m_state; }

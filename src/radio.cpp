@@ -39,6 +39,7 @@ Radio::~Radio()
 
 void Radio::playStation(const QString &name)
 {
+   m_name = name;
    QNetworkReply *reply = ella::Track::getSimilar(
                    name, ella::Track::SearchParams(),
                    ella::Util::Playlist);
@@ -52,9 +53,10 @@ void Radio::onGotPlaylist()
         Playlist playlist = ella::Track::getSimilar(reply).values();
         m_playlistResolver->setPlaylist(playlist);
         m_playlistResolver->start();
-
+        reply->deleteLater();
     }
     catch(ella::ws::ParseError &e) {
+        m_name = QString();
         emit error(InvalidStation, tr("This item is not available for streaming"));
     }
 }
@@ -79,6 +81,7 @@ void Radio::stop()
             m_playlistResolver->stop();
         setState(Stopped);
         m_skipLeft = 0;
+        m_name = QString();
     }
 }
 

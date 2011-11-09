@@ -83,6 +83,7 @@ void MainWindow::defaultWindow()
     slider->setValue(0);
     tabWidget->setCurrentIndex(TAB_STATION);
     metadataWidget->clear();
+    Ui_MainWindow::statusBar->clearMessage();
 }
 
 void MainWindow::setupTrayIcon()
@@ -150,6 +151,8 @@ void MainWindow::onNewStation()
     if (radio->state() != Stopped)
         radio->stop();
     radio->playStation(stationWidget->name());
+    Ui_MainWindow::statusBar->showMessage(
+            QString(tr("Playing tracks %1")).arg(radio->stationName()));
 }
 
 void MainWindow::onTrackStarted(const Track &track)
