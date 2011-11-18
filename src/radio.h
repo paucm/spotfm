@@ -39,8 +39,8 @@ class Radio: public QObject {
     void unpause();
 
   signals:
-    void trackStarted(const Track &track);
-    void trackEnded(const Track &track, int at);
+    void trackStarted(Track track);
+    void trackEnded(int at);
     void skipsLeft(int skips);
     void trackProgress(int pos);
 

@@ -22,6 +22,7 @@ bool AudioController::isPlaying() const
 void AudioController::play()
 {
     loadNext();
+    m_playCondition.wakeAll();
 }
 
 void AudioController::stop()
@@ -29,7 +30,7 @@ void AudioController::stop()
     m_state = Stopped;
     clearSoundQueue();
     SpotifySession::self()->unload();
-    emit trackEnded(m_trackPos);
+    emit trackEnded(m_trackPos/1000);
     m_trackPos = 0;
 }
 

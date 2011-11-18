@@ -19,7 +19,7 @@ Radio::Radio(QObject *parent)
     m_playlistResolver = new PlaylistResolver(this);
     connect(m_playlistResolver, SIGNAL(trackAvailable()), this, SLOT(onTrackAvailable()));
 
-	m_audioController = new OpenalAudio(this);
+    m_audioController = new OpenalAudio(this);
     connect(m_audioController, SIGNAL(trackStarted()), this, SLOT(onTrackStarted()));
     connect(m_audioController, SIGNAL(trackEnded(int)), this, SLOT(onTrackEnded(int)));
     connect(m_audioController, SIGNAL(trackProgress(int)), this, SIGNAL(trackProgress(int)));
@@ -120,15 +120,22 @@ void Radio::onTrackStarted()
 
 void Radio::onTrackEnded(int at)
 {
-    Track track = m_audioController->currentTrack();
     setState(Stopped);
-    emit trackEnded(track, at);
+    emit trackEnded(at);
 }
 
 void Radio::onAudioControllerError(int code, const QString &message)
 {
-    if(code != InvalidTrack) {
-        stop();
-        emit error(code, message);
-    }
+    switch(code) {
+        case InvalidTrack:
+        {
+            if (m_skipLeft > 0)
+                skipTrack();
+            break;
+        }
+        default:
+            stop();
+            emit error(code, message);
+    };
 }
+

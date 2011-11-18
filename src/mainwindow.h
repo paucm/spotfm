@@ -9,6 +9,7 @@
 
 class Track;
 class QCloseEvent;
+class SettingsDialog;
 
 class MainWindow : public QMainWindow, private Ui::MainWindow
 {
@@ -49,8 +50,12 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void createStation();
         void tooglePlayPauseButtons(bool enabled);
 
+        void loadExtensions();
+
         QSystemTrayIcon *m_trayIcon;
         int m_lastVolume;
+
+        SettingsDialog *m_settingsDlg;
 };
 
 #endif

@@ -22,7 +22,11 @@ SOURCES += radio.cpp \
            playlistresolver.cpp \
            suggest.cpp \
            openal-audio.cpp \
-           spotfmapp.cpp 
+           spotfmapp.cpp \
+           settingsdialog.cpp \
+           extensions/lastfm/lastfmwidget.cpp \
+           extensions/lastfm/lastfmextension.cpp \
+           extensions/lastfm/lastfmservice.cpp
 
 HEADERS += spotifysession.h \
            appkey.h \
@@ -44,11 +48,17 @@ HEADERS += spotifysession.h \
            openal-audio.h \
            util.h \
            spotfmapp.h \
+           settingsdialog.h \
+           extension.h \
+           extensions/lastfm/lastfmwidget.h \
+           extensions/lastfm/lastfmextension.h \
+           extensions/lastfm/lastfmservice.h
 
 FORMS += mainwindow.ui \
          logindialog.ui \
          metadatawidget.ui \
-         stationwidget.ui
+         stationwidget.ui \
+         extensions/lastfm/lastfmwidget.ui
 
 RESOURCES += spotfm.qrc 
 

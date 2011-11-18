@@ -14,8 +14,11 @@
 #include "spotifysession.h"
 #include "track.h"
 #include "aboutdialog.h"
+#include "settingsdialog.h"
 #include "metadatawidget.h"
 #include "util.h"
+
+#include "extensions/lastfm/lastfmextension.h"
 
 #define TAB_STATION 0
 #define TAB_PLAYING 1
@@ -39,22 +42,22 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     actionPlay->setVisible(false);
 
-
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
 
     AboutDialog *about = new AboutDialog(this);
     connect(actionAbout, SIGNAL(triggered()), about, SLOT(show()));
 
+    m_settingsDlg = new SettingsDialog(this);
+    connect(actionSettings, SIGNAL(triggered()), m_settingsDlg, SLOT(show()));
+
     Radio *radio = SpotFm::app()->radio();
     connect(radio, SIGNAL(trackStarted(Track)), this, SLOT(onTrackStarted(Track)));
     connect(radio, SIGNAL(skipsLeft(int)), this, SLOT(enableSkipButton(int)));
     connect(radio, SIGNAL(trackProgress(int)), this, SLOT(onTrackProgress(int)));
     connect(radio, SIGNAL(error(int, QString)), this, SLOT(onRadioError(int, QString)));
-    connect(volumeSlider, SIGNAL(valueChanged(int)), radio, SLOT(setVolume(int)));
 
-    defaultWindow();
-    setupTrayIcon();
+    connect(volumeSlider, SIGNAL(valueChanged(int)), radio, SLOT(setVolume(int)));
 
     connect(stationWidget, SIGNAL(clicked()), this, SLOT(onNewStation()));
     stationWidget->setFocus();
@@ -63,6 +66,10 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
     volumeSlider->setValue(s->value("volume", 80).toInt());
     radio->setVolume(volumeSlider->value());
     m_lastVolume = volumeSlider->value();
+
+    defaultWindow();
+    setupTrayIcon();
+    loadExtensions();
 }
 
 MainWindow::~MainWindow()
@@ -170,12 +177,12 @@ void MainWindow::onTrackStarted(const Track &track)
 
     int duration = track.duration();
     QString total = QString("%1:%2")
-        .arg((duration / 1000) / 60, 2, 10, QLatin1Char('0'))
-        .arg((duration / 1000) % 60, 2, 10, QLatin1Char('0'));
+        .arg(duration / 60, 2, 10, QLatin1Char('0'))
+        .arg(duration % 60, 2, 10, QLatin1Char('0'));
     totalTimeLabel->setText(total);
     timeLabel->setText(QString(tr("00:00")));
     slider->setMinimum(0);
-    slider->setMaximum(duration/1000);
+    slider->setMaximum(duration);
     slider->setValue(0);
     metadataWidget->setMetadata(track);
 }
@@ -259,3 +266,11 @@ void MainWindow::enableSkipButton(int skips)
 {
     actionSkip->setEnabled(skips > 0);
 }
+
+void MainWindow::loadExtensions()
+{
+    LastFmExtension *ext = new LastFmExtension();
+    ext->setParent(this);
+    m_settingsDlg->addExtension(ext);
+}
+

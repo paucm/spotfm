@@ -84,7 +84,7 @@ sp_image *Track::albumImage(SpotifySession *session) const
 int Track::duration() const
 {
   if(isValid())
-    return sp_track_duration(m_spTrack);
+    return sp_track_duration(m_spTrack) / 1000;
   return 0;
 }
 

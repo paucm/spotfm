@@ -22,7 +22,7 @@ SpotFmApp::SpotFmApp(int &argc, char **argv) throw(SpotFmException)
     m_logoutAndQuit = false;
 
     LoginDialog d(m_settings->value("Username").toString());
-    if (!m_settings->value("Username").toString().isEmpty() && 
+    if (!m_settings->value("Username").toString().isEmpty() &&
             !m_settings->value("Password").toString().isEmpty()) {
         d.setPassword(m_settings->value("Password").toString());
         d.authenticate();
