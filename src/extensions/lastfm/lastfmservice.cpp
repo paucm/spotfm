@@ -36,6 +36,7 @@ LastFmService::LastFmService(const QString &username, const QString &password, c
     , m_username(username)
     , m_password(password)
     , m_sessionKey(sessionKey)
+    , m_timestamp(0)
 {
 
     m_nam = new QNetworkAccessManager(this);
@@ -106,6 +107,7 @@ void LastFmService::nowPlaying(const Track &track)
     if (m_sessionKey.isEmpty()) return;
 
     m_currentTrack = track;
+    m_timestamp = QDateTime::currentDateTime().toUTC().toTime_t();
     //Wait 5 seconds before submit nowPlaying
     m_timer->start(5*1000);
 }
@@ -152,11 +154,8 @@ void LastFmService::scrobble(int at)
 
     int point = (at * 100) / m_currentTrack.duration();
     if (m_currentTrack.duration() < scrobbleMinDuration ||
-            m_currentTrack.duration() > scrobbleMaxDuration ||
-            point < defaultScrobblePoint)
+            !(at > scrobbleMaxDuration || point > defaultScrobblePoint))
         return;
-
-    uint timestamp = QDateTime::currentDateTime().toUTC().toTime_t() - at;
 
     const QString apiSig = md5(QString(
                                    "album%1api_key%2artist%3chosenByUser0duration%4methodtrack.scrobblesk%5timestamp%6track%7%8").
@@ -165,12 +164,12 @@ void LastFmService::scrobble(int at)
                                arg(m_currentTrack.artist()).
                                arg(m_currentTrack.duration()).
                                arg(m_sessionKey).
-                               arg(timestamp).
+                               arg(m_timestamp).
                                arg(m_currentTrack.title()).
                                arg(LastFmService::secret).toUtf8());
 
     #define e( x ) QUrl::toPercentEncoding(x)
-    QByteArray data = "timestamp=" + QByteArray::number(timestamp) +
+    QByteArray data = "timestamp=" + QByteArray::number(m_timestamp) +
                       "&track=" + e(m_currentTrack.title()) +
                       "&artist=" + e(m_currentTrack.artist()) +
                       "&album=" + e(m_currentTrack.album()) +

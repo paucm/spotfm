@@ -40,6 +40,7 @@ class LastFmService : public QObject
         QString m_password;
         QString m_sessionKey;
         Track m_currentTrack;
+        uint m_timestamp;
 
         QNetworkAccessManager *m_nam;
 
