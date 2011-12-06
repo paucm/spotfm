@@ -63,7 +63,13 @@ ArtistBiographyFetcher::~ArtistBiographyFetcher()
 
 void ArtistBiographyFetcher::run()
 {
-    sp_artistbrowse_create(m_session, m_artist, ArtistBiographyFetcher::artistBrowserLoaded, this);
+    #if SPOTIFY_API_VERSION < 10
+    sp_artistbrowse_create(m_session, m_artist,
+                           ArtistBiographyFetcher::artistBrowserLoaded, this);
+    #else
+    sp_artistbrowse_create(m_session, m_artist, SP_ARTISTBROWSE_NO_ALBUMS,
+                           ArtistBiographyFetcher::artistBrowserLoaded, this);
+    #endif
 }
 
 void SP_CALLCONV ArtistBiographyFetcher::artistBrowserLoaded(sp_artistbrowse *browse, void *userdata)
