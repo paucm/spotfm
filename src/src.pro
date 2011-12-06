@@ -16,7 +16,6 @@ SOURCES += radio.cpp \
            audiocontroller.cpp \
            logindialog.cpp \
            metadatafetcher.cpp \
-           aboutdialog.cpp \
            metadatawidget.cpp \
            stationwidget.cpp \
            playlistresolver.cpp \
@@ -38,7 +37,6 @@ HEADERS += spotifysession.h \
            mainwindow.h \
            logindialog.h \
            metadatafetcher.h \
-           aboutdialog.h \
            metadatawidget.h \
            stationwidget.h \
            playlistresolver.h \

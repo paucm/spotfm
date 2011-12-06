@@ -40,6 +40,7 @@ class MainWindow : public QMainWindow, private Ui::MainWindow
         void onTrackStarted(const Track &track);
         void onTrackProgress(int pos);
         void onRadioError(int code, const QString &msg);
+        void showAboutSpotfm();
 
     protected:
         void closeEvent(QCloseEvent *event);

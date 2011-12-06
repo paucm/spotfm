@@ -13,7 +13,6 @@
 #include "mainwindow.h"
 #include "spotifysession.h"
 #include "track.h"
-#include "aboutdialog.h"
 #include "settingsdialog.h"
 #include "metadatawidget.h"
 #include "util.h"
@@ -44,9 +43,7 @@ MainWindow::MainWindow(QWidget *widget, Qt::WFlags fl)
 
     connect(actionLogoutAndQuit, SIGNAL(triggered()), qApp, SLOT(logoutAndQuit()));
     connect(actionQuit, SIGNAL(triggered()), qApp, SLOT(logout()));
-
-    AboutDialog *about = new AboutDialog(this);
-    connect(actionAbout, SIGNAL(triggered()), about, SLOT(show()));
+    connect(actionAbout, SIGNAL(triggered()), this, SLOT(showAboutSpotfm()));
 
     m_settingsDlg = new SettingsDialog(this);
     connect(actionSettings, SIGNAL(triggered()), m_settingsDlg, SLOT(show()));
@@ -274,3 +271,11 @@ void MainWindow::loadExtensions()
     m_settingsDlg->addExtension(ext);
 }
 
+void MainWindow::showAboutSpotfm()
+{
+    QMessageBox::about(this, tr("About SpotFm"),
+                        tr("<h2><b>SpotFm %1<br/></h2>Copyright 2011, 2012<br/>Pau Capella &lt;pcapellam@gmail.com&gt;<br/><br/>"
+                        "This product uses SPOTIFY CORE but is not endorsed,<br/>certified or otherwise approved in any way by Spotify.<br/>"
+                        "Spotify is the registered trade mark of the Spotify Group")
+                        .arg( qApp->applicationVersion()));
+}
