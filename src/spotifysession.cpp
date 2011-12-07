@@ -23,7 +23,7 @@ sp_session_callbacks SpotifySession::spotifySessionCallbacks = {
     &SpotifySession::spMusicDelivery,
     &SpotifySession::spPlayTokenLost,
     &SpotifySession::spLogMessage,
-    &SpotifySession::spEndOfTrack,
+    &SpotifySession::spEndOfTrack
 };
 
 void SP_CALLCONV SpotifySession::spLoggedIn(sp_session *session, sp_error error)
@@ -113,6 +113,7 @@ SpotifySession::SpotifySession()
     QString cacheDir = dataDir + "/cache";
     cacheDir = QDir::toNativeSeparators(cacheDir);
     #endif
+    memset(&m_config, 0, sizeof(m_config));
     m_config.api_version = SPOTIFY_API_VERSION;
     m_config.cache_location = cacheDir.toLocal8Bit().constData();
     m_config.settings_location = dataDir.toLocal8Bit().constData();
