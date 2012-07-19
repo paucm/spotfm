@@ -136,7 +136,9 @@ void LastFmService::requestNowPlaying()
                       "&method=track.updateNowPlaying";
     #undef e
     qDebug() << "LASTFM NowPlaying:" << data;
-    QNetworkReply *reply = m_nam->post(QNetworkRequest(url()), data);
+    QNetworkRequest request(url());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QNetworkReply *reply = m_nam->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(onNowPlaying()));
 }
 
@@ -181,7 +183,9 @@ void LastFmService::scrobble(int at)
                       "&method=track.scrobble";
     #undef e
     qDebug() << "LASTM Scrobble:" << data;
-    QNetworkReply *reply = m_nam->post(QNetworkRequest(url()), data);
+    QNetworkRequest request(url());
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
+    QNetworkReply *reply = m_nam->post(request, data);
     connect(reply, SIGNAL(finished()), this, SLOT(onScrobble()));
 }
 
